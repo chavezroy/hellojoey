@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hello Joey 🦘</title>
+<link href="https://fonts.googleapis.com/css2?family=Unica+One&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+
+/* APPLY SCANLINES TO BODY TEXTS (Same as Nav) */
+.parallax-list li {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.215,0.61,0.355,1);
+    will-change: opacity, transform;
+}
+
+.parallax-list li.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Remove flickering animation that might cause audio */
+
+/* UPHEAVAL FONT */
+@font-face {
+    font-family: 'Upheaval';
+    src: url('upheavtt.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* FORCE DOS GREEN BASE TEXT */
+body, h1, h2, h3, h4, h5, h6, p, li, span, a, div {
+    color: #00FF00 !important;
+    text-transform: uppercase;
+}
+
+/* GLOWING GREEN HOVER FOR EVERYTHING INTERACTIVE */
+a:hover, .portfolio-item:hover h3, .parallax-list li:hover, .scroll-glitch:hover {
+    color: #00FF00 !important;
+    text-shadow:
+        0 0 5px #00FF00,
+        0 0 10px #00FF00,
+        0 0 20px #00FF00,
+        0 0 40px #00FF00;
+}
+
+/* APPLY UPHEAVAL TO ENTIRE SITE */
+body, header, nav, a, section, footer,
+h1, h2, h3, h4, h5, h6,
+p, li, span, div {
+    font-family: 'Upheaval', sans-serif !important;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background:#000; color:#fff; font-family:'Inter',sans-serif;
+  text-transform:uppercase; letter-spacing:0.12em;
+  overflow-x:hidden; cursor:none; position:relative;
+  text-align: center;
+}
+
+/* Force page to start at top */
+html {
+  scroll-behavior: smooth;
+}
+
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  height: auto; /* Changed to auto to allow growth */
+  min-height: 100%;
+}
+
+body {
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+.portfolio-item img {
+    width: 5%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* CUSTOM CURSOR */
+#custom-cursor {
+  position: fixed;
+  font-size: 38px;
+  pointer-events: none;
+  z-index: 10001;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  transition: transform 0.1s ease;
+  color: #00FF00;
+  text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 20px #00FF00, 0 0 40px #00FF00;
+  animation: cursor-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes cursor-pulse {
+  0%, 100% {
+    text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 20px #00FF00, 0 0 40px #00FF00;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    text-shadow: 0 0 15px #00FF00, 0 0 30px #00FF00, 0 0 45px #00FF00, 0 0 80px #00FF00, 0 0 100px #00FF00;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+/* PARTICLE TRAIL */
+.particle {
+  position: fixed;
+  font-size: 14px; /* Slightly larger for better visibility */
+  pointer-events: none;
+  opacity: 0.9;
+  mix-blend-mode: screen;
+  z-index: 10001;
+  /* Added a glow to the heart particles to match the aesthetic */
+  text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00;
+  animation: fall 1.5s linear forwards;
+}
+
+@keyframes fall { 
+  0% { opacity: 0.9; transform: translateY(0) rotate(0deg) scale(1); }
+  100% { opacity: 0; transform: translateY(150px) rotate(360deg) scale(0.5); } 
+}
+
+/* FULLSCREEN BACKGROUND VIDEO */
+#bg-video { position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-2; opacity:0.35; mix-blend-mode:screen; }
+
+/* NOISE */
+.noise { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:-1; opacity:0.1;
+background:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC44IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIj48L2ZldHVyYnVsZW5jZT48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbilvcGFjaXR5PSIuMDUiLz48L3N2Zz4=') repeat;
+animation:noise-move 0.3s steps(8) infinite; mix-blend-mode:screen; }
+@keyframes noise-move {0%{transform:translate(0,0);}100%{transform:translate(10px,10px);}}
+
+/* HEADER */
+header { 
+  position:fixed; 
+  top:0; 
+  left:0; 
+  right:0; 
+  padding:30px 60px; 
+  z-index:1000; 
+  display:flex; 
+  justify-content:center; 
+  align-items:center; 
+  backdrop-filter:blur(7px); 
+  background:rgba(37,0,115,0.3);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+header.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.logo { 
+  font-family:'Unica One',cursive; 
+  font-size:48px; 
+  font-weight:400; 
+  letter-spacing:0.2em; 
+  background:linear-gradient(90deg,#fff,#ff0040); 
+  -webkit-background-clip:text; 
+  -webkit-text-fill-color:transparent; 
+  background-clip:text;
+}
+nav { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 20px 35px;
+  justify-content: center; 
+  max-width: 1200px;
+  align-items: center;
+  transition: opacity 0.6s ease;
+}
+
+nav.fade-out {
+  opacity: 0;
+}
+nav a { 
+  color:rgba(255,255,255,0.8); 
+  text-decoration:none; 
+  font-size:20px;
+  font-weight:500; 
+  position:relative; 
+  transition:all 0.4s ease;
+  white-space: nowrap;
+  transform-origin: center center;
+  text-transform: none;
+}
+
+/* CRT/LCD scanline effect for nav */
+nav a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+nav a:hover { 
+  color:#00FF00 !important; 
+  transform:scale(1.05);
+  text-shadow:0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 20px #00FF00, 0 0 40px #00FF00;
+}
+
+nav a:active {
+  font-style: italic;
+}
+
+/* NAV LINKS: underline grows from center - TIGHTENED BOTTOM */
+nav a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; 
+  left: 50%;
+  width: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, rgba(0,255,0,0) 0%, rgba(0,255,0,1) 15%, rgba(0,255,0,1) 85%, rgba(0,255,0,0) 100%);
+  transform: translateX(-50%);
+  transition: width 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+  filter: drop-shadow(0 0 2px rgba(0,255,0,0)) drop-shadow(0 0 5px rgba(0,255,0,0)) drop-shadow(0 0 10px rgba(0,255,0,0));
+}
+
+nav a:hover::after {
+  width: 100%;
+  filter: drop-shadow(0 0 2px rgba(0,255,0,0.8)) drop-shadow(0 0 5px rgba(0,255,0,0.6)) drop-shadow(0 0 10px rgba(0,255,0,0.4));
+}
+
+/* HERO */
+.hero { 
+  position:relative; 
+  height:90vh; 
+  display:flex; 
+  flex-direction:column; 
+  justify-content:center; 
+  align-items:center; 
+  text-align:center;
+  perspective: 1000px;
+}
+
+/* GLITCH EFFECT */
+.glitch-container { 
+  position:relative; 
+  display:inline-block;
+  cursor: pointer;
+  transition: all 0.6s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.glitch-container.sticky {
+  position: fixed;
+  top: 80px; 
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1002; 
+}
+
+.glitch-container::after {
+  content: '';
+  position: absolute;
+  bottom: -5px; 
+  left: 50%;
+  width: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, rgba(0,255,0,0) 0%, rgba(0,255,0,1) 15%, rgba(0,255,0,1) 85%, rgba(0,255,0,0) 100%);
+  transform: translateX(-50%);
+  transition: width 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+  filter: drop-shadow(0 0 2px rgba(0,255,0,0)) drop-shadow(0 0 5px rgba(0,255,0,0)) drop-shadow(0 0 10px rgba(0,255,0,0));
+}
+
+.glitch-container:hover::after {
+  width: 100%;
+  filter: drop-shadow(0 0 2px rgba(0,255,0,0.8)) drop-shadow(0 0 5px rgba(0,255,0,0.6)) drop-shadow(0 0 10px rgba(0,255,0,0.4));
+}
+
+.hero-image { 
+  display:block; 
+  max-width:30vw; 
+  height:auto; 
+  mix-blend-mode: screen; 
+  opacity: 0.95;
+  filter: drop-shadow(0 0 4px rgba(0,255,0,0.5)) drop-shadow(0 0 8px rgba(0,255,0,0.3));
+  transition: filter 0.4s ease, transform 0.4s ease;
+  transform-origin: center center;
+}
+
+/* Layered RGB copies */
+.hero-image-wrap { position: relative; display: inline-block; }
+.hero-image.base { position: relative; z-index: 2; display:block; }
+.hero-image.rgb { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; mix-blend-mode: screen; opacity: 0; z-index: 1; }
+.hero-image.rgb.r { filter: brightness(1.5) sepia(1) hue-rotate(-50deg) saturate(5); }
+.hero-image.rgb.g { filter: brightness(1.5) sepia(1) hue-rotate(70deg) saturate(5); }
+.hero-image.rgb.b { filter: brightness(1.5) sepia(1) hue-rotate(190deg) saturate(5); }
+
+.hero-image-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background: repeating-linear-gradient(rgba(0,0,0,0.3) 0px, rgba(0,0,0,0.3) 1px, transparent 1px, transparent 2px);
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  nav { display: none; }
+  header { display: flex !important; opacity: 1 !important; pointer-events: auto !important; }
+  header::before {
+    content: 'HELLO JOEY';
+    font-family: 'Upheaval', sans-serif;
+    font-size: 32px;
+    color: #00FF00;
+    text-shadow: 0 0 4px rgba(0,255,0,0.5), 0 0 8px rgba(0,255,0,0.3);
+    letter-spacing: 0em;
+  }
+  .hero .glitch-container { display: none; }
+  #about { margin-top: 100px; }
+}
+
+.glitch-container:hover .hero-image {
+  filter: drop-shadow(0 0 2px #00FF00) drop-shadow(0 0 5px #00FF00) drop-shadow(0 0 10px #00FF00);
+  transform: scale(1.05);
+}
+
+#glitch-canvas { 
+  position:absolute; 
+  top:0; 
+  left:0; 
+  width:100%; 
+  height:100%; 
+  pointer-events:none; 
+  mix-blend-mode: hard-light;
+  opacity: 0.4;
+  z-index: 4;
+}
+
+/* PARALLAX SECTIONS - TIGHTENED VERTICAL SPACE */
+.parallax-list { 
+  list-style:none; 
+  font-size:clamp(28px,3vw,44px); 
+  font-weight:400; 
+  line-height:1.1; /* Tightened from 1.2 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px; 
+}
+.parallax-list li {
+  opacity:0;
+  transform:translateY(50px);
+  transition:opacity 1.2s ease, transform 1.2s cubic-bezier(0.215,0.61,0.355,1);
+  position:relative;
+  padding: 0; /* REMOVED PADDING TO TIGHTEN UNDERLINE */
+  display: inline-block;
+  transform-origin: center center;
+  text-shadow: 0 0 4px rgba(0,255,0,0.5), 0 0 8px rgba(0,255,0,0.3);
+}
+
+.parallax-list li::after {
+  content: '';
+  position: absolute;
+  bottom: 1px; /* TIGHTENED TO TEXT BASE */
+  left: 50%;
+  width: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, rgba(0,255,0,0) 0%, rgba(0,255,0,1) 15%, rgba(0,255,0,1) 85%, rgba(0,255,0,0) 100%);
+  transform: translateX(-50%);
+  transition: width 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+  filter: drop-shadow(0 0 2px rgba(0,255,0,0)) drop-shadow(0 0 5px rgba(0,255,0,0)) drop-shadow(0 0 10px rgba(0,255,0,0));
+}
+
+.parallax-list li.visible { opacity:1; transform:translateY(0);}
+.parallax-list li:hover {
+  color:#00FF00 !important;
+  text-shadow:0 0 3px #00FF00, 0 0 8px #00FF00, 0 0 15px #00FF00;
+  transform:scale(1.05)!important;
+}
+
+.parallax-list li:hover::after {
+  width: 100%;
+}
+
+/* FOOTER */
+footer { 
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px 10%; 
+  text-align: center;
+  font-size: 12px;
+  backdrop-filter: blur(7px);
+  background: rgba(37, 0, 115, 0.3);
+  z-index: 1000;
+  disp
+
+<header>
+  <nav>
+    <a href="#socialmedia">Social Media</a>
+    <a href="#creativedirection">Creative Direction</a>
+    <a href="#videographyphotography">Videography/Photography</a>
+    <a href="#motiongraphicsvfx">Motion Graphics/VFX</a>
+    <a href="#apps">Apps</a>
+    <a href="#graphicdesign">Graphic Design</a>
+    <a href="#ux/ui">UX/UI</a>
+    <a href="#audiovideoediting">Audio/Video Editing</a>
+    <a href="#audioproductionsounddesign">Audio Production/Sound Design</a>
+    <a href="#ai">AI</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div style="position:relative; z-index:1;">
+    <div class="glitch-container" id="hero-image-trigger">
+      <div class="hero-image-wrap">
+        <img class="hero-image base" src="hellojoey8.png" alt="Hello Joey">
+        <img class="hero-image rgb r" src="hellojoey8.png" aria-hidden="true">
+        <img class="hero-image rgb g" src="hellojoey8.png" aria-hidden="true">
+        <img class="hero-image rgb b" src="hellojoey8.png" aria-hidden="true">
+        <canvas id="glitch-canvas"></canvas>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <ul class="parallax-list">
+    <li>Social Operations</li>
+    <li>Assets & Trailers</li>
+    <li>Performance Marketing</li>
+    <li>Talent Management</li>
+    <li>Brand Partnerships</li>
+  </ul>
+</section>
+
+<section id="competencies">
+  <ul class="parallax-list">
+    <li>Strategy & Planning</li>
+    <li>Content Production</li>
+    <li>Data & Analytics</li>
+    <li>Creative Direction</li>
+  </ul>
+</section>
+
+<div class="scroll-spacer"></div>
+
+<footer id="contact"> 
+  <p><a href="mailto:joey@sayhellojoey.com">joey@sayhellojoey.com</a></p>
+  <p>©2026 HELLO JOEY. All Rights Reserved.</p>
+</footer>
+
+<script>
+// Ensure background video stays muted
+const bgVideo = document.getElementById('bg-video');
+if (bgVideo) {
+  bgVideo.muted = true;
+  bgVideo.volume = 0;
+}
+
+window.addEventListener('load', () => window.scrollTo(0, 0));
+if (history.scrollRestoration) history.scrollRestoration = 'manual';
+
+// Observer for animations - remove any audio bindings from text elements
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      // Explicitly prevent any audio context from being created on these elements
+      entry.target.style.pointerEvents = 'auto';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.parallax-list li').forEach(item => {
+  observer.observe(item);
+  // Remove any audio event listeners that might be attached
+  item.addEventListener('animationiteration', (e) => e.stopPropagation(), true);
+  item.addEventListener('transitionend', (e) => e.stopPropagation(), true);
+});
+
+// Cursor tracking - VISUAL ONLY
+const cursor = document.getElementById('custom-cursor');
+document.addEventListener('mousemove', e => {
+  if (cursor) {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  }
+});
+
+// Glitch effect - VISUAL ONLY
+const canvas = document.getElementById('glitch-canvas');
+const ctx = canvas ? canvas.getContext('2d') : null;
+const img = document.querySelector('.hero-image.base');
+
+function glitchLoop() {
+  if (!ctx || !img || !img.complete) { 
+    requestAnimationFrame(glitchLoop); 
+    return; 
+  }
+  if (canvas.width !== img.clientWidth) {
+    canvas.width = img.clientWidth;
+    canvas.height = img.clientHeight;
+  }
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  if (Math.random() < 0.05) {
+    ctx.globalAlpha = 0.5;
+    ctx.drawImage(img, (Math.random() - 0.5) * 10, 0);
+  }
+  requestAnimationFrame(glitchLoop);
+}
+
+if (img) {
+  img.addEventListener('load', () => requestAnimationFrame(glitchLoop));
+  if (img.complete) {
+    requestAnimationFrame(glitchLoop);
+  }
+}
+
+// Header/Footer visibility on hover
+const heroImageTrigger = document.getElementById('hero-image-trigger');
+const headerEl = document.querySelector('header');
+const footerEl = document.querySelector('footer');
+
+if (heroImageTrigger) {
+  heroImageTrigger.addEventListener('mouseenter', () => {
+    if (headerEl) headerEl.classList.add('show');
+    if (footerEl) footerEl.classList.add('show');
+  });
+}
+</script>
+</body>
+</html>
