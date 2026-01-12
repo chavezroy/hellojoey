@@ -6,6 +6,41 @@
 <title>Hello Joey 🦘</title>
 <link href="https://fonts.googleapis.com/css2?family=Unica+One&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+
+.video-background {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: -99;
+}
+
+.video-foreground,
+.video-background iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Prevents user from clicking the video */
+}
+
+/* Optional: To ensure the video covers the screen regardless of aspect ratio */
+@media (min-aspect-ratio: 16/9) {
+    .video-foreground { height: 300%; top: -100%; }
+}
+@media (max-aspect-ratio: 16/9) {
+    .video-foreground { width: 300%; left: -100%; }
+}
+
+.noise {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: -98; /* Sits on top of the video but behind content */
+    opacity: .05;
+    pointer-events: none;
+    background: url(https://path-to-your-noise-texture.png);
+}
+
 #kangaroo-container {
   position: absolute;
   bottom: 100%; 
@@ -173,7 +208,17 @@ footer a { color: #00FF00; text-decoration: none; position: relative; display: i
 <body>
 <button id="audio-toggle">AUDIO: ON</button>
 <div id="custom-cursor">🕹️</div>
-<video id="bg-video" autoplay muted loop playsinline><source src="images/Glitch_Overlay_Colorful.mp4" type="video/mp4"></video>
+<div class="video-background">
+    <div class="video-foreground">
+        <iframe 
+            src="https://www.youtube.com/embed/JMNGUv5nEwY?autoplay=1&mute=1&controls=0&loop=1&playlist=JMNGUv5nEwY&rel=0&enablejsapi=1&modestbranding=1&playsinline=1" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen
+            title="Background Video">
+        </iframe>
+    </div>
+</div>
 <div class="noise"></div>
 
 <header>

@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
       // For development: allow any password if hash not set
       // In production, this should be an error
       if (process.env.NODE_ENV === 'production') {
+        console.error('ADMIN_PASSWORD_HASH is not set in environment variables');
         return NextResponse.json(
           { error: 'Admin password not configured' },
           { status: 500 }
@@ -28,8 +29,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
+    // Debug logging (remove in production if needed)
+    console.log('Password verification attempt:', {
+      hashExists: !!ADMIN_PASSWORD_HASH,
+      hashLength: ADMIN_PASSWORD_HASH.length,
+      hashPrefix: ADMIN_PASSWORD_HASH.substring(0, 7), // First 7 chars should be $2a$10$
+    });
+
     const isValid = await verifyPassword(password, ADMIN_PASSWORD_HASH);
     if (!isValid) {
+      console.error('Password verification failed:', {
+        hashLength: ADMIN_PASSWORD_HASH.length,
+        hashPrefix: ADMIN_PASSWORD_HASH.substring(0, 7),
+      });
       return NextResponse.json(
         { error: 'Invalid password' },
         { status: 401 }
