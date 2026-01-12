@@ -114,16 +114,19 @@ body {
   }
 }
 
+/* Base link color */
+a:not(.admin-page a) {
+  color: #00FF00;
+}
+
 a:hover,
 .portfolio-item:hover h3,
 .parallax-list li:hover,
 .scroll-glitch:hover {
   color: #00FF00 !important;
   text-shadow:
-    0 0 5px #00FF00,
-    0 0 10px #00FF00,
-    0 0 20px #00FF00,
-    0 0 40px #00FF00;
+    0 0 3px #00FF00,
+    0 0 6px #00FF00;
 }
 
 body,
@@ -156,9 +159,55 @@ nav a::before {
   z-index: 1;
 }
 
+/* Animated underline effect for navigation links */
+nav a {
+  position: relative;
+  will-change: transform;
+  transform: translateZ(0); /* Force GPU acceleration */
+}
+
+nav a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, rgba(0,255,0,0) 0%, rgba(0,255,0,1) 15%, rgba(0,255,0,1) 85%, rgba(0,255,0,0) 100%);
+  transform: translateX(-50%) translateZ(0); /* GPU acceleration */
+  transition: width 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+  filter: drop-shadow(0 0 2px rgba(0,255,0,0)) drop-shadow(0 0 5px rgba(0,255,0,0)) drop-shadow(0 0 10px rgba(0,255,0,0));
+  will-change: width;
+}
+
+nav a:hover::after {
+  width: 100%;
+}
+
 .parallax-list li {
   position: relative;
   z-index: 2;
+  will-change: transform, opacity;
+  transform: translateZ(0); /* Force GPU acceleration */
+}
+
+/* Animated underline effect for parallax list items (about & competencies) */
+.parallax-list li::after {
+  content: '';
+  position: absolute;
+  bottom: 1px;
+  left: 50%;
+  width: 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, rgba(0,255,0,0) 0%, rgba(0,255,0,1) 15%, rgba(0,255,0,1) 85%, rgba(0,255,0,0) 100%);
+  transform: translateX(-50%) translateZ(0); /* GPU acceleration */
+  transition: width 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
+  filter: drop-shadow(0 0 2px rgba(0,255,0,0)) drop-shadow(0 0 5px rgba(0,255,0,0)) drop-shadow(0 0 10px rgba(0,255,0,0));
+  will-change: width;
+}
+
+.parallax-list li:hover::after {
+  width: 100%;
 }
 
 /* Noise overlay */

@@ -25,9 +25,17 @@ export default function CustomCursor() {
   const moveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animationFrameRef = useRef<number | null>(null);
   const particleIdRef = useRef(0);
+  const particlesRef = useRef<Particle[]>([]);
 
   useEffect(() => {
+    let lastUpdateTime = 0;
+    const throttleDelay = 16; // ~60fps
+
     const handleMouseMove = (e: MouseEvent) => {
+      const now = performance.now();
+      if (now - lastUpdateTime < throttleDelay) return;
+      lastUpdateTime = now;
+
       setMousePos({ x: e.clientX, y: e.clientY });
       setIsMoving(true);
       
@@ -44,14 +52,20 @@ export default function CustomCursor() {
       lastX.current = e.clientX;
       setTargetRotation(Math.max(Math.min(deltaX * 1.5, 35), -35));
 
-      if (Math.random() > 0.6) {
+      // Reduce particle frequency for better performance
+      if (Math.random() > 0.85) {
         const newParticle: Particle = {
           id: particleIdRef.current++,
           x: e.clientX + (Math.random() - 0.5) * 15,
           y: e.clientY + (Math.random() - 0.5) * 15,
           opacity: 0.9,
         };
-        setParticles((prev) => [...prev, newParticle]);
+        setParticles((prev) => {
+          // Limit max particles to prevent memory issues
+          const updated = [...prev, newParticle].slice(-15); // Keep only last 15 particles
+          particlesRef.current = updated;
+          return updated;
+        });
         setTimeout(() => {
           setParticles((prev) => prev.filter((p) => p.id !== newParticle.id));
         }, 1500);
@@ -60,10 +74,10 @@ export default function CustomCursor() {
 
     window.addEventListener('mousemove', handleMouseMove);
 
-    // Idle particle leak
+    // Idle particle leak - reduced frequency for performance
     const idleLeak = () => {
-      if (!isMoving) {
-        const burst = Math.floor(Math.random() * 4) + 1;
+      if (!isMoving && particlesRef.current.length < 5) {
+        const burst = Math.floor(Math.random() * 2) + 1; // Reduced from 4
         for (let i = 0; i < burst; i++) {
           setTimeout(() => {
             const newParticle: Particle = {
@@ -72,19 +86,35 @@ export default function CustomCursor() {
               y: currentPos.y,
               opacity: 0.9,
             };
-            setParticles((prev) => [...prev, newParticle]);
+            setParticles((prev) => {
+              const updated = [...prev, newParticle].slice(-10); // Limit idle particles
+              particlesRef.current = updated;
+              return updated;
+            });
             setTimeout(() => {
-              setParticles((prev) => prev.filter((p) => p.id !== newParticle.id));
+              setParticles((prev) => {
+                const filtered = prev.filter((p) => p.id !== newParticle.id);
+                particlesRef.current = filtered;
+                return filtered;
+              });
             }, 1500);
           }, i * 100);
         }
       }
-      setTimeout(idleLeak, 800 + Math.random() * 2500);
+      setTimeout(idleLeak, 2000 + Math.random() * 3000); // Less frequent
     };
     idleLeak();
 
-    // Animation loop
-    const animate = () => {
+    // Animation loop - optimized
+    let lastFrameTime = 0;
+    const animate = (currentTime: number) => {
+      // Throttle to ~60fps
+      if (currentTime - lastFrameTime < 16) {
+        animationFrameRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrameTime = currentTime;
+
       setTime((t) => t + 0.05);
       setCurrentPos((prev) => {
         const newPos = {
@@ -107,7 +137,7 @@ export default function CustomCursor() {
       }
       animationFrameRef.current = requestAnimationFrame(animate);
     };
-    animate();
+    animationFrameRef.current = requestAnimationFrame(animate);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
@@ -127,6 +157,7 @@ export default function CustomCursor() {
           top: currentPos.y,
           transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(${pulseScale})`,
           textShadow: '0 0 8px rgba(0, 255, 0, 0.6)',
+          willChange: 'transform',
         }}
       >
         🕹️
@@ -149,6 +180,7 @@ export default function CustomCursor() {
             style={{
               transform: `translate(-50%, -50%) scale(${trailScale}) rotate(${rotation}deg)`,
               opacity: trailOpacity,
+              willChange: 'transform, opacity',
             }}
           >
             🕹️
@@ -174,6 +206,7 @@ export default function CustomCursor() {
             top: particle.y,
             filter: 'brightness(0.8) sepia(1) hue-rotate(70deg) saturate(10)',
             textShadow: '0 0 5px #00FF00, 0 0 10px #00FF00',
+            willChange: 'transform, opacity',
           }}
         >
           ⭐️

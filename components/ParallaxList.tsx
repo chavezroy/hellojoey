@@ -18,22 +18,16 @@ export default function ParallaxList({ items }: ParallaxListProps) {
           <motion.li
             key={index}
             ref={itemRef}
-            className="relative z-[2] inline-block transform-origin-center text-shadow-[0_0_4px_rgba(0,255,0,0.5),0_0_8px_rgba(0,255,0,0.3)]"
+            className="relative z-[2] inline-block transform-origin-center text-neon-green text-shadow-[0_0_3px_rgba(0,255,0,0.5),0_0_6px_rgba(0,255,0,0.3)]"
             initial={{ opacity: 0, y: 50 }}
             animate={itemInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
             transition={{ duration: 1.2, ease: [0.215, 0.61, 0.355, 1] }}
             whileHover={{
               scale: 1.05,
-              textShadow: '0 0 3px #00FF00, 0 0 8px #00FF00, 0 0 15px #00FF00',
+              textShadow: '0 0 3px #00FF00, 0 0 6px #00FF00',
             }}
           >
             <span className="relative z-[2]">{item}</span>
-            <motion.div
-              className="absolute bottom-[1px] left-1/2 -translate-x-1/2 h-[1.5px] bg-gradient-to-r from-transparent via-neon-green to-transparent"
-              initial={{ width: 0 }}
-              whileHover={{ width: '100%' }}
-              transition={{ duration: 0.8, ease: [0.645, 0.045, 0.355, 1] }}
-            />
           </motion.li>
         );
       })}

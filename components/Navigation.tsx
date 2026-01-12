@@ -28,16 +28,10 @@ export default function Navigation({ items, show, fadeOut }: NavigationProps) {
           <Link
             key={index}
             href={item.href}
-            className="relative text-white/80 no-underline text-xl font-medium transition-all duration-400 whitespace-nowrap transform-origin-center hover:text-neon-green hover:scale-105 hover:drop-shadow-[0_0_5px_#00FF00,0_0_10px_#00FF00,0_0_20px_#00FF00,0_0_40px_#00FF00]"
+            className="relative text-neon-green no-underline text-xl font-medium transition-all duration-400 whitespace-nowrap transform-origin-center hover:scale-105 hover:drop-shadow-[0_0_3px_#00FF00,0_0_6px_#00FF00]"
             style={{ textTransform: 'none' }}
           >
             <span className="relative z-[2]">{item.label}</span>
-            <motion.div
-              className="absolute bottom-[-2px] left-1/2 -translate-x-1/2 h-[1.5px] bg-gradient-to-r from-transparent via-neon-green to-transparent"
-              initial={{ width: 0 }}
-              whileHover={{ width: '100%' }}
-              transition={{ duration: 0.8, ease: [0.645, 0.045, 0.355, 1] }}
-            />
           </Link>
         ))}
       </nav>
