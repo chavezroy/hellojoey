@@ -4,6 +4,17 @@ import { cookies } from 'next/headers';
 // Read environment variables at runtime instead of module load time
 // This ensures they're available in AWS Amplify and other deployment environments
 export function getAdminPasswordHash(): string {
+  // Debug: List all env vars that start with ADMIN (for debugging)
+  const adminEnvVars = Object.keys(process.env)
+    .filter(key => key.toUpperCase().includes('ADMIN'))
+    .map(key => ({ key, exists: true, length: process.env[key]?.length || 0 }));
+  
+  console.log('Environment variables check:', {
+    allAdminVars: adminEnvVars,
+    nodeEnv: process.env.NODE_ENV,
+    hasAdminPasswordHash: 'ADMIN_PASSWORD_HASH' in process.env,
+  });
+  
   const rawHash = process.env.ADMIN_PASSWORD_HASH || '';
   
   // Enhanced debug logging BEFORE processing
