@@ -4,7 +4,19 @@ import { cookies } from 'next/headers';
 // Read environment variables at runtime instead of module load time
 // This ensures they're available in AWS Amplify and other deployment environments
 export function getAdminPasswordHash(): string {
-  const hash = process.env.ADMIN_PASSWORD_HASH || '';
+  let hash = process.env.ADMIN_PASSWORD_HASH || '';
+  
+  // If hash appears to be base64 encoded (no $ at start), decode it
+  // This is a workaround for Next.js variable expansion issues with $ characters
+  if (hash && !hash.startsWith('$')) {
+    try {
+      hash = Buffer.from(hash, 'base64').toString('utf8');
+    } catch (e) {
+      // If decoding fails, use the value as-is
+      console.warn('Failed to decode base64 hash, using as-is');
+    }
+  }
+  
   // Debug logging to help diagnose issues
   if (!hash) {
     console.warn('ADMIN_PASSWORD_HASH is not set in environment variables');
@@ -14,6 +26,7 @@ export function getAdminPasswordHash(): string {
       length: hash.length,
       prefix: hash.substring(0, 10),
       endsWith: hash.substring(hash.length - 5),
+      startsWithDollar: hash.startsWith('$'),
     });
   }
   return hash;
