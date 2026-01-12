@@ -1,0 +1,214 @@
+@import "tailwindcss";
+
+@source "../app/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../components/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../pages/**/*.{js,ts,jsx,tsx,mdx}";
+
+@theme {
+  --color-neon-green: #00FF00;
+  --color-header-purple: rgba(37, 0, 115, 0.3);
+  --font-family-upheaval: 'Upheaval', sans-serif;
+  --animate-roo-hop: roo-natural-hop 1.8s infinite ease-in-out;
+  --animate-roo-travel: roo-travel 18s infinite linear;
+  --animate-text-flicker: text-flicker 0.4s ease-out forwards;
+  --animate-noise-move: noise-move 0.3s steps(8) infinite;
+  --animate-fall: fall 1.5s linear forwards;
+}
+
+/* Use layers to ensure Tailwind utilities have priority */
+@layer base, components, utilities;
+
+@keyframes roo-natural-hop {
+  0%, 30%, 60%, 100% { transform: translateY(0) rotate(0deg); }
+  15% { transform: translateY(-80px) rotate(15deg); }
+  45% { transform: translateY(-45px) rotate(10deg); }
+  80% { transform: translateY(-95px) rotate(20deg); }
+}
+
+@keyframes roo-travel {
+  0% { left: -100px; }
+  100% { left: 110%; }
+}
+
+@keyframes text-flicker {
+  0% { opacity: 0.1; text-shadow: 0 0 0px #00FF00; }
+  5% { opacity: 1; text-shadow: 0 0 10px #00FF00; }
+  10% { opacity: 0.3; }
+  15% { opacity: 1; }
+  25% { opacity: 1; transform: skewX(4deg); }
+  30% { transform: skewX(0deg); }
+  100% { opacity: 1; }
+}
+
+@keyframes noise-move {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(10px, 10px); }
+}
+
+@keyframes fall {
+  0% { opacity: 0.9; transform: translateY(0) rotate(0deg) scale(1); }
+  100% { opacity: 0; transform: translateY(150px) rotate(360deg) scale(0.5); }
+}
+
+@font-face {
+  font-family: 'Upheaval';
+  src: url('/fonts/upheavtt.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Let Tailwind handle the reset, but keep box-sizing for consistency */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+  height: auto;
+  min-height: 100%;
+}
+
+body {
+  position: relative;
+  top: 0;
+  left: 0;
+  background: #000;
+  color: #fff;
+  font-family: 'Upheaval', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  text-align: center;
+  cursor: none !important;
+}
+
+/* Main site styles - scoped to avoid interfering with Tailwind */
+@layer components {
+  body:not(.admin-page) {
+    color: #00FF00;
+    text-transform: uppercase;
+    font-family: 'Upheaval', sans-serif;
+  }
+  
+  body:not(.admin-page) h1:not([class]),
+  body:not(.admin-page) h2:not([class]),
+  body:not(.admin-page) h3:not([class]),
+  body:not(.admin-page) h4:not([class]),
+  body:not(.admin-page) h5:not([class]),
+  body:not(.admin-page) h6:not([class]),
+  body:not(.admin-page) p:not([class]),
+  body:not(.admin-page) li:not([class]),
+  body:not(.admin-page) span:not([class]),
+  body:not(.admin-page) a:not([class]) {
+    color: #00FF00;
+    text-transform: uppercase;
+    font-family: 'Upheaval', sans-serif;
+  }
+}
+
+a:hover,
+.portfolio-item:hover h3,
+.parallax-list li:hover,
+.scroll-glitch:hover {
+  color: #00FF00 !important;
+  text-shadow:
+    0 0 5px #00FF00,
+    0 0 10px #00FF00,
+    0 0 20px #00FF00,
+    0 0 40px #00FF00;
+}
+
+body,
+a,
+button,
+li,
+.glitch-container,
+.hero-image,
+nav {
+  cursor: none !important;
+}
+
+/* Scanline effect */
+.parallax-list li::before,
+nav a::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 2px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+.parallax-list li {
+  position: relative;
+  z-index: 2;
+}
+
+/* Noise overlay */
+.noise {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.1;
+  background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC44IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIj48L2ZldHVyYnVsZW5jZT48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbilvcGFjaXR5PSIuMDUiLz48L3N2Zz4=') repeat;
+  animation: noise-move 0.3s steps(8) infinite;
+  mix-blend-mode: screen;
+}
+
+/* Mobile styles */
+@media (max-width: 768px) {
+  nav {
+    display: none;
+  }
+  
+  header {
+    display: flex !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  
+  header::before {
+    content: 'HELLO JOEY';
+    font-family: 'Upheaval', sans-serif;
+    font-size: 32px;
+    color: #00FF00;
+    text-shadow: 0 0 4px rgba(0,255,0,0.5), 0 0 8px rgba(0,255,0,0.3);
+    letter-spacing: 0em;
+  }
+  
+  .hero .glitch-container {
+    display: none;
+  }
+  
+  #about {
+    margin-top: 100px;
+  }
+  
+  .glitch-container.sticky {
+    top: 60px;
+    transform: translateX(-50%) scale(0.4);
+    opacity: 0.8;
+  }
+}
+

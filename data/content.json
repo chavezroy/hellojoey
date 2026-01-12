@@ -1,0 +1,46 @@
+{
+  "navigation": [
+    { "label": "Social Media", "href": "#socialmedia" },
+    { "label": "Creative Direction", "href": "#creativedirection" },
+    { "label": "Videography/Photography", "href": "#videographyphotography" },
+    { "label": "Motion Graphics/VFX", "href": "#motiongraphicsvfx" },
+    { "label": "Apps", "href": "#apps" },
+    { "label": "Graphic Design", "href": "#graphicdesign" },
+    { "label": "UX/UI", "href": "#ux/ui" },
+    { "label": "Audio/Video Editing", "href": "#audiovideoediting" },
+    { "label": "Audio Production/Sound Design", "href": "#audioproductionsounddesign" },
+    { "label": "AI", "href": "#ai" }
+  ],
+  "hero": {
+    "image": "/images/hellojoey8.png",
+    "alt": "Hello Joey"
+  },
+  "sections": {
+    "about": [
+      "Social Operations",
+      "Assets & Trailers",
+      "Performance Marketing",
+      "Talent Management",
+      "Brand Partnerships"
+    ],
+    "competencies": [
+      "Strategy & Planning",
+      "Content Production",
+      "Data & Analytics",
+      "Creative Direction"
+    ]
+  },
+  "footer": {
+    "email": "joey@sayhellojoey.com",
+    "copyright": "©2026 HELLO JOEY. All Rights Reserved."
+  },
+  "video": {
+    "url": "/videos/Glitch_Overlay_Colorful.mp4",
+    "poster": ""
+  },
+  "kangaroo": {
+    "image": "/images/hellojoeyjoey.png",
+    "alt": "Kangaroo"
+  }
+}
+
