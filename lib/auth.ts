@@ -1,7 +1,24 @@
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 
-const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || '';
+// Read environment variables at runtime instead of module load time
+// This ensures they're available in AWS Amplify and other deployment environments
+export function getAdminPasswordHash(): string {
+  const hash = process.env.ADMIN_PASSWORD_HASH || '';
+  // Debug logging to help diagnose issues
+  if (!hash) {
+    console.warn('ADMIN_PASSWORD_HASH is not set in environment variables');
+  } else {
+    console.log('ADMIN_PASSWORD_HASH loaded:', {
+      exists: true,
+      length: hash.length,
+      prefix: hash.substring(0, 10),
+      endsWith: hash.substring(hash.length - 5),
+    });
+  }
+  return hash;
+}
+
 const SESSION_SECRET = process.env.SESSION_SECRET || 'default-secret-change-in-production';
 const SESSION_COOKIE_NAME = 'admin_session';
 
@@ -57,5 +74,5 @@ export async function isAuthenticated(): Promise<boolean> {
   return !!session;
 }
 
-export { ADMIN_PASSWORD_HASH, SESSION_SECRET };
+export { SESSION_SECRET };
 

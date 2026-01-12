@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyPassword, setSession, createSession, ADMIN_PASSWORD_HASH } from '@/lib/auth';
+import { verifyPassword, setSession, createSession, getAdminPasswordHash } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,6 +11,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Read hash at runtime to ensure it's available in AWS Amplify
+    const ADMIN_PASSWORD_HASH = getAdminPasswordHash();
 
     // If no hash is set, use the password directly (for initial setup)
     // In production, you should set ADMIN_PASSWORD_HASH in environment variables
@@ -29,18 +32,28 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
-    // Debug logging (remove in production if needed)
+    // Enhanced debug logging
     console.log('Password verification attempt:', {
       hashExists: !!ADMIN_PASSWORD_HASH,
       hashLength: ADMIN_PASSWORD_HASH.length,
-      hashPrefix: ADMIN_PASSWORD_HASH.substring(0, 7), // First 7 chars should be $2a$10$
+      hashPrefix: ADMIN_PASSWORD_HASH.substring(0, 10),
+      hashSuffix: ADMIN_PASSWORD_HASH.substring(ADMIN_PASSWORD_HASH.length - 5),
+      passwordLength: password.length,
+      nodeEnv: process.env.NODE_ENV,
+      envVarExists: !!process.env.ADMIN_PASSWORD_HASH,
+      envVarLength: process.env.ADMIN_PASSWORD_HASH?.length || 0,
     });
 
+    // Verify password
     const isValid = await verifyPassword(password, ADMIN_PASSWORD_HASH);
+    
     if (!isValid) {
       console.error('Password verification failed:', {
         hashLength: ADMIN_PASSWORD_HASH.length,
-        hashPrefix: ADMIN_PASSWORD_HASH.substring(0, 7),
+        hashPrefix: ADMIN_PASSWORD_HASH.substring(0, 10),
+        hashSuffix: ADMIN_PASSWORD_HASH.substring(ADMIN_PASSWORD_HASH.length - 5),
+        passwordLength: password.length,
+        passwordPrefix: password.substring(0, 3) + '***',
       });
       return NextResponse.json(
         { error: 'Invalid password' },
@@ -48,11 +61,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log('Password verification successful');
     const sessionToken = createSession();
     await setSession(sessionToken);
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error('Auth error:', error);
+    console.error('Error stack:', error?.stack);
     return NextResponse.json(
       { error: error?.message || 'Authentication failed' },
       { status: 500 }
