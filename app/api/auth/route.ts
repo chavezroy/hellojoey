@@ -22,6 +22,11 @@ export async function POST(request: NextRequest) {
       // In production, this should be an error
       if (process.env.NODE_ENV === 'production') {
         console.error('ADMIN_PASSWORD_HASH is not set in environment variables');
+        console.error('Raw env var check:', {
+          ADMIN_PASSWORD_HASH: process.env.ADMIN_PASSWORD_HASH ? 'EXISTS' : 'MISSING',
+          length: process.env.ADMIN_PASSWORD_HASH?.length || 0,
+          firstChars: process.env.ADMIN_PASSWORD_HASH?.substring(0, 20) || 'N/A',
+        });
         return NextResponse.json(
           { error: 'Admin password not configured' },
           { status: 500 }
