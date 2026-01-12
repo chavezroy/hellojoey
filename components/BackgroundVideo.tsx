@@ -268,7 +268,7 @@ export default function BackgroundVideo({ videoUrl }: BackgroundVideoProps) {
           WebkitTransform: 'translateZ(0)',
           pointerEvents: 'none',
           backgroundColor: '#000000',
-        }}
+        } as React.CSSProperties & { WebkitMixBlendMode?: string; WebkitTransform?: string }}
         onError={(e) => {
           const video = e.currentTarget;
           const error = video.error;
