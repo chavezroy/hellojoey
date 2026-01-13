@@ -139,6 +139,24 @@ nav {
   cursor: none !important;
 }
 
+/* Enhanced custom cursor visibility for accessibility */
+[class*="text-neon-green"] {
+  /* Ensure cursor is always visible with strong contrast */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Fallback for browsers that don't support emoji or have rendering issues */
+@supports not (text-shadow: 0 0 0) {
+  [class*="text-neon-green"]::before {
+    content: '●';
+    display: inline-block;
+    color: #00FF00;
+    font-size: 1em;
+  }
+}
+
 /* Scanline effect */
 .parallax-list li::before,
 nav a::before {
