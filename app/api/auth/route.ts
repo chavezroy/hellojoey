@@ -13,7 +13,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Read hash at runtime to ensure it's available in AWS Amplify
+    console.log('=== AUTH ROUTE DEBUG START ===');
+    console.log('Direct env check:', {
+      exists: !!process.env.ADMIN_PASSWORD_HASH,
+      length: process.env.ADMIN_PASSWORD_HASH?.length || 0,
+      firstChars: process.env.ADMIN_PASSWORD_HASH?.substring(0, 20) || 'N/A',
+    });
+    
     const ADMIN_PASSWORD_HASH = getAdminPasswordHash();
+    
+    console.log('After getAdminPasswordHash():', {
+      hashExists: !!ADMIN_PASSWORD_HASH,
+      hashLength: ADMIN_PASSWORD_HASH.length,
+      hashPrefix: ADMIN_PASSWORD_HASH.substring(0, 10),
+      isEmpty: ADMIN_PASSWORD_HASH === '',
+    });
 
     // If no hash is set, use the password directly (for initial setup)
     // In production, you should set ADMIN_PASSWORD_HASH in environment variables
@@ -27,6 +41,7 @@ export async function POST(request: NextRequest) {
           length: process.env.ADMIN_PASSWORD_HASH?.length || 0,
           firstChars: process.env.ADMIN_PASSWORD_HASH?.substring(0, 20) || 'N/A',
         });
+        console.error('=== AUTH ROUTE DEBUG END (ERROR) ===');
         return NextResponse.json(
           { error: 'Admin password not configured' },
           { status: 500 }
@@ -36,6 +51,8 @@ export async function POST(request: NextRequest) {
       await setSession(sessionToken);
       return NextResponse.json({ success: true });
     }
+    
+    console.log('=== AUTH ROUTE DEBUG END (SUCCESS) ===');
 
     // Enhanced debug logging
     console.log('Password verification attempt:', {
