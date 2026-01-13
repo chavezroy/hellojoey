@@ -9,6 +9,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [uploading, setUploading] = useState<string | null>(null); // Track which field is uploading
   const router = useRouter();
 
   useEffect(() => {
@@ -57,6 +58,49 @@ export default function AdminDashboard() {
     await fetch('/api/auth/logout', { method: 'POST' });
     router.push('/admin/login');
     router.refresh();
+  };
+
+  const handleImageUpload = async (file: File, fieldName: 'hero' | 'kangaroo') => {
+    if (!content) return;
+
+    setUploading(fieldName);
+    setMessage('');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('fieldName', fieldName);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.path) {
+        // Update the content with the new image path
+        if (fieldName === 'hero') {
+          setContent({
+            ...content,
+            hero: { ...content.hero, image: data.path },
+          });
+        } else if (fieldName === 'kangaroo') {
+          setContent({
+            ...content,
+            kangaroo: { ...content.kangaroo, image: data.path },
+          });
+        }
+        setMessage(`${fieldName === 'hero' ? 'Hero' : 'Kangaroo'} image uploaded successfully!`);
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        setMessage(data.error || 'Failed to upload image');
+      }
+    } catch (error) {
+      setMessage('An error occurred while uploading');
+    } finally {
+      setUploading(null);
+    }
   };
 
   if (loading) {
@@ -140,15 +184,33 @@ export default function AdminDashboard() {
           <h2 className="text-2xl sm:text-3xl mb-6 uppercase font-semibold pb-3 border-b border-neon-green/30">Hero Image</h2>
           <div className="space-y-4">
             <div>
-              <label className="block mb-2 text-sm uppercase font-medium">Image URL</label>
+              <label className="block mb-2 text-sm uppercase font-medium">Current Image</label>
+              {content.hero.image && (
+                <div className="mb-4">
+                  <img 
+                    src={content.hero.image} 
+                    alt={content.hero.alt || 'Hero image'} 
+                    className="max-w-full h-auto max-h-48 border-2 border-neon-green/50 rounded"
+                  />
+                </div>
+              )}
+              <label className="block mb-2 text-sm uppercase font-medium">Upload New Image</label>
               <input
-                type="text"
-                value={content.hero.image}
-                onChange={(e) =>
-                  setContent({ ...content, hero: { ...content.hero, image: e.target.value } })
-                }
-                className="w-full px-4 py-3 bg-black/50 border-2 border-neon-green/50 text-neon-green focus:outline-none focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all"
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleImageUpload(file, 'hero');
+                  }
+                }}
+                disabled={uploading === 'hero'}
+                className="w-full px-4 py-3 bg-black/50 border-2 border-neon-green/50 text-neon-green focus:outline-none focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-neon-green file:text-black file:font-upheaval file:uppercase file:cursor-pointer hover:file:bg-[#00cc00] disabled:opacity-50"
               />
+              {uploading === 'hero' && (
+                <p className="mt-2 text-sm text-neon-green/70">Uploading...</p>
+              )}
+              <p className="mt-2 text-xs text-neon-green/60">Current path: {content.hero.image}</p>
             </div>
             <div>
               <label className="block mb-2 text-sm uppercase font-medium">Alt Text</label>
@@ -158,7 +220,7 @@ export default function AdminDashboard() {
                 onChange={(e) =>
                   setContent({ ...content, hero: { ...content.hero, alt: e.target.value } })
                 }
-                className="w-full px-4 py-3 bg-black/50 border-2 border-neon-green/50 text-neon-green focus:outline-none focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all"
+                className="w-full px-4 py-3 bg-black/50 border-2 border-neon-green/50 text-neon-green focus:outline-none focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all font-sans normal-case"
               />
             </div>
           </div>
@@ -264,19 +326,36 @@ export default function AdminDashboard() {
         {/* Kangaroo Image Editor */}
         <section className="mb-8 p-6 sm:p-8 bg-[rgba(37,0,115,0.3)] border-2 border-neon-green rounded-lg">
           <h2 className="text-2xl sm:text-3xl mb-6 uppercase font-semibold pb-3 border-b border-neon-green/30">Kangaroo Image</h2>
-          <div>
-            <label className="block mb-2 text-sm uppercase font-medium">Image URL</label>
-            <input
-              type="text"
-              value={content.kangaroo.image}
-              onChange={(e) =>
-                setContent({
-                  ...content,
-                  kangaroo: { ...content.kangaroo, image: e.target.value },
-                })
-              }
-              className="w-full px-4 py-3 bg-black/50 border-2 border-neon-green/50 text-neon-green focus:outline-none focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all"
-            />
+          <div className="space-y-4">
+            <div>
+              <label className="block mb-2 text-sm uppercase font-medium">Current Image</label>
+              {content.kangaroo.image && (
+                <div className="mb-4">
+                  <img 
+                    src={content.kangaroo.image} 
+                    alt={content.kangaroo.alt || 'Kangaroo image'} 
+                    className="max-w-full h-auto max-h-48 border-2 border-neon-green/50 rounded"
+                  />
+                </div>
+              )}
+              <label className="block mb-2 text-sm uppercase font-medium">Upload New Image</label>
+              <input
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleImageUpload(file, 'kangaroo');
+                  }
+                }}
+                disabled={uploading === 'kangaroo'}
+                className="w-full px-4 py-3 bg-black/50 border-2 border-neon-green/50 text-neon-green focus:outline-none focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-neon-green file:text-black file:font-upheaval file:uppercase file:cursor-pointer hover:file:bg-[#00cc00] disabled:opacity-50"
+              />
+              {uploading === 'kangaroo' && (
+                <p className="mt-2 text-sm text-neon-green/70">Uploading...</p>
+              )}
+              <p className="mt-2 text-xs text-neon-green/60">Current path: {content.kangaroo.image}</p>
+            </div>
           </div>
         </section>
 

@@ -151,25 +151,15 @@ export default function CustomCursor() {
   return (
     <>
       <motion.div
-        className="fixed text-[38px] pointer-events-none z-[10005] text-neon-green"
+        className="fixed text-[38px] pointer-events-none z-[10005]"
         style={{
           left: currentPos.x,
           top: currentPos.y,
           transform: `translate(-50%, -50%) rotate(${rotation}deg) scale(${pulseScale})`,
-          // Enhanced visibility with multiple shadows and outline
-          textShadow: `
-            0 0 4px rgba(0, 255, 0, 1),
-            0 0 8px rgba(0, 255, 0, 0.8),
-            0 0 12px rgba(0, 255, 0, 0.6),
-            0 0 16px rgba(0, 255, 0, 0.4),
-            -1px -1px 0 rgba(0, 0, 0, 0.8),
-            1px -1px 0 rgba(0, 0, 0, 0.8),
-            -1px 1px 0 rgba(0, 0, 0, 0.8),
-            1px 1px 0 rgba(0, 0, 0, 0.8)
-          `,
-          filter: 'drop-shadow(0 0 2px rgba(0, 255, 0, 1))',
+          color: '#00FF00',
+          textShadow: '0 0 8px #00FF00, 0 0 12px #00FF00, 0 0 16px #00FF00, 2px 2px 4px rgba(0,0,0,0.8)',
+          filter: 'drop-shadow(0 0 4px #00FF00)',
           willChange: 'transform',
-          WebkitTextStroke: '1px rgba(0, 0, 0, 0.5)',
         }}
       >
         🕹️
@@ -183,7 +173,7 @@ export default function CustomCursor() {
         return (
           <motion.div
             key={i}
-            className="fixed text-[38px] pointer-events-none z-[10004] text-neon-green"
+            className="fixed text-[38px] pointer-events-none z-[10004]"
             animate={{
               x: trailPos.x,
               y: trailPos.y,
@@ -192,17 +182,9 @@ export default function CustomCursor() {
             style={{
               transform: `translate(-50%, -50%) scale(${trailScale}) rotate(${rotation}deg)`,
               opacity: trailOpacity,
-              // Removed mix-blend-screen for better browser compatibility
-              // Added stronger shadows for visibility
-              textShadow: `
-                0 0 4px rgba(0, 255, 0, ${trailOpacity}),
-                0 0 8px rgba(0, 255, 0, ${trailOpacity * 0.8}),
-                -1px -1px 0 rgba(0, 0, 0, ${trailOpacity * 0.6}),
-                1px -1px 0 rgba(0, 0, 0, ${trailOpacity * 0.6}),
-                -1px 1px 0 rgba(0, 0, 0, ${trailOpacity * 0.6}),
-                1px 1px 0 rgba(0, 0, 0, ${trailOpacity * 0.6})
-              `,
-              filter: `blur(${Math.min(i * 0.5, 2)}px) drop-shadow(0 0 2px rgba(0, 255, 0, ${trailOpacity}))`,
+              color: '#00FF00',
+              textShadow: `0 0 4px #00FF00, 0 0 8px #00FF00, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000`,
+              filter: `blur(${Math.min(i * 0.5, 2)}px)`,
               willChange: 'transform, opacity',
             }}
           >
@@ -229,16 +211,7 @@ export default function CustomCursor() {
             top: particle.y,
             color: '#00FF00',
             filter: 'brightness(0.8) sepia(1) hue-rotate(70deg) saturate(10)',
-            // Enhanced visibility with stronger shadows
-            textShadow: `
-              0 0 4px #00FF00,
-              0 0 8px #00FF00,
-              0 0 12px rgba(0, 255, 0, 0.8),
-              -1px -1px 0 rgba(0, 0, 0, 0.6),
-              1px -1px 0 rgba(0, 0, 0, 0.6),
-              -1px 1px 0 rgba(0, 0, 0, 0.6),
-              1px 1px 0 rgba(0, 0, 0, 0.6)
-            `,
+            textShadow: '0 0 4px #00FF00, 0 0 8px #00FF00, 0 0 12px #00FF00, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000',
             willChange: 'transform, opacity',
           }}
         >

@@ -87,7 +87,6 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   text-align: center;
-  cursor: none !important;
 }
 
 /* Main site styles - scoped to avoid interfering with Tailwind */
@@ -129,32 +128,21 @@ a:hover,
     0 0 6px #00FF00;
 }
 
-body,
-a,
-button,
-li,
-.glitch-container,
-.hero-image,
-nav {
+/* Hide default cursor on public pages (custom cursor will show) */
+body:not(.admin-page),
+body:not(.admin-page) a,
+body:not(.admin-page) button,
+body:not(.admin-page) li,
+body:not(.admin-page) .glitch-container,
+body:not(.admin-page) .hero-image,
+body:not(.admin-page) nav {
   cursor: none !important;
 }
 
-/* Enhanced custom cursor visibility for accessibility */
-[class*="text-neon-green"] {
-  /* Ensure cursor is always visible with strong contrast */
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-/* Fallback for browsers that don't support emoji or have rendering issues */
-@supports not (text-shadow: 0 0 0) {
-  [class*="text-neon-green"]::before {
-    content: '●';
-    display: inline-block;
-    color: #00FF00;
-    font-size: 1em;
-  }
+/* Admin pages should have normal cursor */
+.admin-page,
+.admin-page * {
+  cursor: auto !important;
 }
 
 /* Scanline effect */

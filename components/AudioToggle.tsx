@@ -291,7 +291,6 @@ export default function AudioToggle() {
       id="audio-toggle"
       onClick={handleToggle}
       className="fixed bottom-[10px] right-5 z-[10002] bg-[rgba(0,255,0,0.1)] border border-neon-green text-neon-green py-2 px-3 font-upheaval transition-all duration-300 hover:bg-neon-green hover:text-black hover:shadow-[0_0_15px_#00FF00]"
-      style={{ cursor: 'none' }}
     >
       AUDIO: {isOn ? 'ON' : 'OFF'}
     </button>
