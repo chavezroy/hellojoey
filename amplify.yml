@@ -4,15 +4,20 @@ frontend:
     preBuild:
       commands:
         - npm ci
-        # Log environment variable status
+    build:
+      commands:
+        # Write environment variables to .env.production for Next.js runtime
         - |
           if [ -n "$ADMIN_PASSWORD" ]; then
-            echo "ADMIN_PASSWORD is set in build (length: ${#ADMIN_PASSWORD})"
+            echo "ADMIN_PASSWORD=$ADMIN_PASSWORD" >> .env.production
+            echo "ADMIN_PASSWORD written to .env.production (length: ${#ADMIN_PASSWORD})"
           else
             echo "Warning: ADMIN_PASSWORD is not set in build environment"
           fi
-    build:
-      commands:
+        - |
+          if [ -n "$SESSION_SECRET" ]; then
+            echo "SESSION_SECRET=$SESSION_SECRET" >> .env.production
+          fi
         - npm run build
   artifacts:
     baseDirectory: .next
