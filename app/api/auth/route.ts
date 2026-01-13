@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyPassword, setSession, createSession, getAdminPasswordHash } from '@/lib/auth';
+import { verifyPlainPassword, setSession, createSession, getAdminPassword } from '@/lib/auth';
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,71 +12,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Read hash at runtime to ensure it's available in AWS Amplify
-    console.log('=== AUTH ROUTE DEBUG START ===');
-    console.log('Direct env check:', {
-      exists: !!process.env.ADMIN_PASSWORD_HASH,
-      length: process.env.ADMIN_PASSWORD_HASH?.length || 0,
-      firstChars: process.env.ADMIN_PASSWORD_HASH?.substring(0, 20) || 'N/A',
-    });
-    
-    const ADMIN_PASSWORD_HASH = getAdminPasswordHash();
-    
-    console.log('After getAdminPasswordHash():', {
-      hashExists: !!ADMIN_PASSWORD_HASH,
-      hashLength: ADMIN_PASSWORD_HASH.length,
-      hashPrefix: ADMIN_PASSWORD_HASH.substring(0, 10),
-      isEmpty: ADMIN_PASSWORD_HASH === '',
-    });
+    // Read plain text password from environment variables
+    const ADMIN_PASSWORD = getAdminPassword();
 
-    // If no hash is set, use the password directly (for initial setup)
-    // In production, you should set ADMIN_PASSWORD_HASH in environment variables
-    if (!ADMIN_PASSWORD_HASH) {
-      // For development: allow any password if hash not set
-      // In production, this should be an error
-      if (process.env.NODE_ENV === 'production') {
-        console.error('ADMIN_PASSWORD_HASH is not set in environment variables');
-        console.error('Raw env var check:', {
-          ADMIN_PASSWORD_HASH: process.env.ADMIN_PASSWORD_HASH ? 'EXISTS' : 'MISSING',
-          length: process.env.ADMIN_PASSWORD_HASH?.length || 0,
-          firstChars: process.env.ADMIN_PASSWORD_HASH?.substring(0, 20) || 'N/A',
-        });
-        console.error('=== AUTH ROUTE DEBUG END (ERROR) ===');
-        return NextResponse.json(
-          { error: 'Admin password not configured' },
-          { status: 500 }
-        );
-      }
-      const sessionToken = createSession();
-      await setSession(sessionToken);
-      return NextResponse.json({ success: true });
+    // If no password is set, return error
+    if (!ADMIN_PASSWORD) {
+      console.error('ADMIN_PASSWORD is not set in environment variables');
+      return NextResponse.json(
+        { error: 'Admin password not configured' },
+        { status: 500 }
+      );
     }
-    
-    console.log('=== AUTH ROUTE DEBUG END (SUCCESS) ===');
 
-    // Enhanced debug logging
-    console.log('Password verification attempt:', {
-      hashExists: !!ADMIN_PASSWORD_HASH,
-      hashLength: ADMIN_PASSWORD_HASH.length,
-      hashPrefix: ADMIN_PASSWORD_HASH.substring(0, 10),
-      hashSuffix: ADMIN_PASSWORD_HASH.substring(ADMIN_PASSWORD_HASH.length - 5),
-      passwordLength: password.length,
-      nodeEnv: process.env.NODE_ENV,
-      envVarExists: !!process.env.ADMIN_PASSWORD_HASH,
-      envVarLength: process.env.ADMIN_PASSWORD_HASH?.length || 0,
-    });
-
-    // Verify password
-    const isValid = await verifyPassword(password, ADMIN_PASSWORD_HASH);
+    // Verify password (plain text comparison)
+    const isValid = verifyPlainPassword(password, ADMIN_PASSWORD);
     
     if (!isValid) {
-      console.error('Password verification failed:', {
-        hashLength: ADMIN_PASSWORD_HASH.length,
-        hashPrefix: ADMIN_PASSWORD_HASH.substring(0, 10),
-        hashSuffix: ADMIN_PASSWORD_HASH.substring(ADMIN_PASSWORD_HASH.length - 5),
-        passwordLength: password.length,
-        passwordPrefix: password.substring(0, 3) + '***',
-      });
+      console.error('Password verification failed');
       return NextResponse.json(
         { error: 'Invalid password' },
         { status: 401 }
