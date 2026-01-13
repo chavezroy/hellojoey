@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 
 // Hardcoded admin password
 // TODO: In production, consider using environment variables, database, or AWS Secrets Manager
-const ADMIN_PASSWORD = 'admin';
+const ADMIN_PASSWORD = 'SlowDownTuBr0!';
 
 export function getAdminPassword(): string {
   return ADMIN_PASSWORD;
