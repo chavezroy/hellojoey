@@ -4,6 +4,13 @@ frontend:
     preBuild:
       commands:
         - npm ci
+        # Ensure environment variables are available at runtime
+        - |
+          if [ -z "$ADMIN_PASSWORD" ]; then
+            echo "Warning: ADMIN_PASSWORD is not set"
+          else
+            echo "ADMIN_PASSWORD is set (length: ${#ADMIN_PASSWORD})"
+          fi
     build:
       commands:
         - npm run build
