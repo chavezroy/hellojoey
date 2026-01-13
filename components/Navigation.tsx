@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface NavItem {
   label: string;
@@ -12,9 +13,11 @@ interface NavigationProps {
   items: NavItem[];
   show: boolean;
   fadeOut: boolean;
+  logoImage: string;
+  logoAlt: string;
 }
 
-export default function Navigation({ items, show, fadeOut }: NavigationProps) {
+export default function Navigation({ items, show, fadeOut, logoImage, logoAlt }: NavigationProps) {
   return (
     <motion.header
       className={`fixed top-0 left-0 right-0 py-[30px] px-[60px] z-[10000] flex justify-center items-center backdrop-blur-[7px] bg-header-purple transition-opacity duration-800 ${
@@ -23,6 +26,19 @@ export default function Navigation({ items, show, fadeOut }: NavigationProps) {
       initial={{ opacity: 0.8 }}
       animate={{ opacity: show ? 1 : 0.8 }}
     >
+      {/* Left Logo */}
+      <div className="nav-logo-wrap left">
+        <Image
+          src={logoImage}
+          alt={logoAlt}
+          width={62}
+          height={62}
+          className="nav-logo-img logo-trigger"
+          style={{ height: '62px', width: 'auto' }}
+        />
+      </div>
+
+      {/* Navigation Links */}
       <nav className={`hidden md:flex flex-wrap gap-y-5 gap-x-[35px] justify-center max-w-[1200px] items-center transition-opacity duration-600 ${fadeOut ? 'opacity-0' : 'opacity-100'}`}>
         {items.map((item, index) => (
           <Link
@@ -35,6 +51,18 @@ export default function Navigation({ items, show, fadeOut }: NavigationProps) {
           </Link>
         ))}
       </nav>
+
+      {/* Right Logo */}
+      <div className="nav-logo-wrap right">
+        <Image
+          src={logoImage}
+          alt={logoAlt}
+          width={62}
+          height={62}
+          className="nav-logo-img logo-trigger"
+          style={{ height: '62px', width: 'auto' }}
+        />
+      </div>
     </motion.header>
   );
 }

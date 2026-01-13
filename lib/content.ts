@@ -5,13 +5,16 @@ const contentPath = path.join(process.cwd(), 'data', 'content.json');
 
 export interface ContentData {
   navigation: Array<{ label: string; href: string }>;
+  logo: {
+    image: string;
+    alt: string;
+  };
   hero: {
     image: string;
     alt: string;
   };
   sections: {
     about: string[];
-    competencies: string[];
   };
   footer: {
     email: string;

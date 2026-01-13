@@ -11,6 +11,10 @@
     { "label": "Audio Production/Sound Design", "href": "#audioproductionsounddesign" },
     { "label": "AI", "href": "#ai" }
   ],
+  "logo": {
+    "image": "/images/roofacethin.png",
+    "alt": "LOGO"
+  },
   "hero": {
     "image": "/images/hellojoey8.png",
     "alt": "Hello Joey"
@@ -22,12 +26,6 @@
       "Performance Marketing",
       "Talent Management",
       "Brand Partnerships"
-    ],
-    "competencies": [
-      "Strategy & Planning",
-      "Content Production",
-      "Data & Analytics",
-      "Creative Direction"
     ]
   },
   "footer": {

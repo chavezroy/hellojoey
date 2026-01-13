@@ -38,6 +38,8 @@ export default function ClientPage({ content }: ClientPageProps) {
         items={content.navigation}
         show={showHeaderFooter}
         fadeOut={fadeOutNav}
+        logoImage={content.logo.image}
+        logoAlt={content.logo.alt}
       />
       <HeroSection
         imageUrl={content.hero.image}
@@ -47,9 +49,6 @@ export default function ClientPage({ content }: ClientPageProps) {
       />
       <section id="about" className="mt-[100px] md:mt-0">
         <ParallaxList items={content.sections.about} />
-      </section>
-      <section id="competencies">
-        <ParallaxList items={content.sections.competencies} />
       </section>
       <div className="h-[400px]" />
       <Footer

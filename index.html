@@ -3,42 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="referrer" content="strict-origin-when-cross-origin">
 <title>Hello Joey 🦘</title>
 <link href="https://fonts.googleapis.com/css2?family=Unica+One&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 
-.video-background {
-    position: fixed;
-    top: 0; right: 0; bottom: 0; left: 0;
-    z-index: -99;
+/* --- CRT INITIALIZATION FLASH --- */
+@keyframes crt-output {
+  0% { opacity: 0; transform: scaleY(1); }
+  5% { opacity: 1; transform: scaleY(0.02); background: #fff; }
+  10% { opacity: 1; transform: scaleY(1); background: transparent; }
+  15% { opacity: 0.4; }
+  20% { opacity: 1; }
+  100% { opacity: 0; }
 }
 
-.video-foreground,
-.video-background iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; /* Prevents user from clicking the video */
+#crt-flash {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 255, 0, 0.1);
+  z-index: 20000;
+  pointer-events: none;
+  opacity: 0;
+}
+.crt-active { animation: crt-output 0.4s ease-out forwards; }
+
+/* --- EXISTING ANIMATIONS --- */
+@keyframes neon-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 22%, 24%, 55% { opacity: 0.8; }
 }
 
-/* Optional: To ensure the video covers the screen regardless of aspect ratio */
-@media (min-aspect-ratio: 16/9) {
-    .video-foreground { height: 300%; top: -100%; }
-}
-@media (max-aspect-ratio: 16/9) {
-    .video-foreground { width: 300%; left: -100%; }
-}
-
-.noise {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: -98; /* Sits on top of the video but behind content */
-    opacity: .05;
-    pointer-events: none;
-    background: url(https://path-to-your-noise-texture.png);
+.audio-activated {
+  box-shadow: 0 0 30px #00FF00, 0 0 60px #00FF00 !important;
+  background: #00FF00 !important;
+  color: #000 !important;
+  transform: scale(1.1);
+  animation: neon-flicker 0.15s infinite;
 }
 
 #kangaroo-container {
@@ -46,20 +47,26 @@
   bottom: 100%; 
   left: -100px;
   z-index: 1001;
-  pointer-events: none;
+  opacity: 0; 
+  transition: opacity 1s ease;
 }
 
 #roo-img {
   width: auto;
   height: auto;
-  /* Scaled down 8% (100% - 8% = 92% of original 38px) BRO */
   max-width: 35px; 
   display: inline-block;
   transform-origin: bottom center;
+  transition: transform 0.3s ease;
+  pointer-events: auto;
+}
+
+#roo-img:hover {
+  transform: scale(1.3) !important;
+  filter: drop-shadow(0 0 5px #00FF00) drop-shadow(0 0 15px #00FF00);
 }
 
 @keyframes roo-natural-hop {
-  /* Landing frames are 0. Apex heights reduced for shorter hops BRO */
   0%, 30%, 60%, 100% { transform: translateY(0) rotate(0deg); } 
   15% { transform: translateY(-80px) rotate(15deg); } 
   45% { transform: translateY(-45px) rotate(10deg); } 
@@ -72,7 +79,7 @@
 }
 
 .hopping #roo-img {
-  animation: roo-natural-hop 1.8s infinite ease-in-out;
+  animation: roo-natural-hop 1.875s infinite ease-in-out;
 }
 
 .paused-roo #roo-img, .paused-roo {
@@ -103,9 +110,36 @@
 }
 .parallax-list li::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0px, rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 1; }
 .parallax-list li { position: relative; z-index: 2; }
-@keyframes text-flicker { 0% { opacity: 0.1; text-shadow: 0 0 0px #00FF00; } 5% { opacity: 1; text-shadow: 0 0 10px #00FF00; } 10% { opacity: 0.3; } 15% { opacity: 1; } 25% { opacity: 1; transform: skewX(4deg); } 30% { transform: skewX(0deg); } 100% { opacity: 1; } }
-.parallax-list li.visible { opacity: 1; transform: translateY(0); animation: text-flicker 0.4s ease-out forwards; }
-@media (max-width: 768px) { .glitch-container.sticky { top: 60px; transform: translateX(-50%) scale(0.4); opacity: 0.8; } }
+
+.parallax-list li { 
+  opacity: 0; 
+  transform: translateY(30px); 
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.215, 0.61, 0.355, 1); 
+  position: relative; 
+  padding: 0; 
+  display: inline-block; 
+  transform-origin: center center; 
+  text-shadow: 0 0 4px rgba(0,255,0,0.5), 0 0 8px rgba(0,255,0,0.3); 
+}
+
+.parallax-list li.visible { 
+  opacity: 1; 
+  transform: translateY(0); 
+}
+
+/* --- UPDATED STICKY LOCK --- */
+.glitch-container.sticky { 
+  position: fixed; 
+  top: 40px; /* Locked to center of header */
+  left: 50%; 
+  transform: translate(-50%, -50%) scale(0.35); 
+  z-index: 10005; /* Highest layer, above header and nav */
+  opacity: 1 !important;
+  pointer-events: auto;
+}
+
+@media (max-width: 768px) { .glitch-container.sticky { top: 40px; transform: translate(-50%, -50%) scale(0.3); opacity: 1 !important; } }
+
 @font-face { font-family: 'Upheaval'; src: url('upheavtt.ttf') format('truetype'); font-weight: normal; font-style: normal; font-display: swap; }
 body, h1, h2, h3, h4, h5, h6, p, li, span, a, div { color: #00FF00 !important; text-transform: uppercase; }
 a:hover, .portfolio-item:hover h3, .parallax-list li:hover, .scroll-glitch:hover { color: #00FF00 !important; text-shadow: 0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 20px #00FF00, 0 0 40px #00FF00; }
@@ -118,7 +152,6 @@ body { background:#000; color:#fff; font-family:'Inter',sans-serif; text-transfo
 html { scroll-behavior: smooth; }
 html, body { overflow-x: hidden; width: 100%; height: auto; min-height: 100%; }
 body { position: relative; top: 0; left: 0; }
-.portfolio-item img { width: 5%; height: auto; object-fit: contain; }
 
 #custom-cursor { 
   position: fixed; 
@@ -152,13 +185,51 @@ body { position: relative; top: 0; left: 0; }
   animation: fall 1.5s linear forwards; 
 }
 @keyframes fall { 0% { opacity: 0.9; transform: translateY(0) rotate(0deg) scale(1); } 100% { opacity: 0; transform: translateY(150px) rotate(360deg) scale(0.5); } }
-#bg-video { position:fixed; top:0; left:0; width:100%; height:100%; object-fit:cover; z-index:-2; opacity:0.35; mix-blend-mode:screen; }
+
+#bg-video-container { position:fixed; top:0; left:0; width:100%; height:100%; z-index:-2; overflow: hidden; }
+#bg-video { width: 100%; height: 100%; object-fit: cover; opacity: 0.35; mix-blend-mode: screen; }
+
 .noise { position:fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:-1; opacity:0.1; background:url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC44IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIj48L2ZldHVyYnVsZW5jZT48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbilvcGFjaXR5PSIuMDUiLz48L3N2Zz4=') repeat; animation:noise-move 0.3s steps(8) infinite; mix-blend-mode:screen; }
 @keyframes noise-move {0%{transform:translate(0,0);}100%{transform:translate(10px,10px);}}
-header { position:fixed; top:0; left:0; right:0; padding:30px 60px; z-index:1000; display:flex; justify-content:center; align-items:center; backdrop-filter:blur(7px); background:rgba(37,0,115,0.3); opacity: 0; pointer-events: none; transition: opacity 0.8s ease; }
+
+.nav-logo-wrap {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+}
+
+.nav-logo-wrap.left { left: 80px; }
+.nav-logo-wrap.right { right: 80px; }
+
+.nav-logo-img {
+  height: 62px; 
+  width: auto;
+  filter: none; 
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.nav-logo-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0px, rgba(0, 0, 0, 0.2) 1px, transparent 1px, transparent 2px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.nav-logo-wrap:hover .nav-logo-img {
+  filter: drop-shadow(0 0 5px #00FF00) drop-shadow(0 0 15px #00FF00);
+  transform: scale(1.05);
+}
+
+header { position:fixed; top:0; left:0; right:0; padding:15px 60px; z-index:1000; display:flex; justify-content:center; align-items:center; backdrop-filter:blur(7px); background:rgba(37,0,115,0.3); opacity: 0; pointer-events: none; transition: opacity 0.8s ease; min-height: 80px; }
 header.show { opacity: 1; pointer-events: auto; }
-nav { display: flex; flex-wrap: wrap; gap: 20px 35px; justify-content: center; max-width: 1200px; align-items: center; transition: opacity 0.6s ease; }
-nav.fade-out { opacity: 0; }
+nav { display: flex; flex-wrap: wrap; gap: 20px 35px; justify-content: center; max-width: 1400px; align-items: center; transition: opacity 0.6s ease; position: relative; }
+nav.fade-out { opacity: 0; pointer-events: none; }
 nav a { color:rgba(255,255,255,0.8); text-decoration:none; font-size:20px; font-weight:500; position:relative; transition:all 0.4s ease; white-space: nowrap; transform-origin: center center; text-transform: none; }
 nav a::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.15) 0px, rgba(0, 0, 0, 0.15) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 1; }
 nav a:hover { color:#00FF00 !important; transform:scale(1.05); text-shadow:0 0 5px #00FF00, 0 0 10px #00FF00, 0 0 20px #00FF00, 0 0 40px #00FF00; }
@@ -166,7 +237,7 @@ nav a::after { content: ''; position: absolute; bottom: -2px; left: 50%; width: 
 nav a:hover::after { width: 100%; }
 .hero { position:relative; height:90vh; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; perspective: 1000px; }
 .glitch-container { position:relative; display:inline-block; transition: all 0.6s cubic-bezier(0.215, 0.61, 0.355, 1); }
-.glitch-container.sticky { position: fixed; top: 80px; left: 50%; transform: translateX(-50%); z-index: 1002; }
+
 .glitch-container::after { content: ''; position: absolute; bottom: -5px; left: 50%; width: 0; height: 1.5px; background: linear-gradient(90deg, rgba(0,255,0,0) 0%, rgba(0,255,0,1) 15%, rgba(0,255,0,1) 85%, rgba(0,255,0,0) 100%); transform: translateX(-50%); transition: width 0.8s cubic-bezier(0.645, 0.045, 0.355, 1); filter: drop-shadow(0 0 2px rgba(0,255,0,0)) drop-shadow(0 0 5px rgba(0,255,0,0)) drop-shadow(0 0 10px rgba(0,255,0,0)); }
 .glitch-container:hover::after { width: 100%; }
 .hero-image { display:block; max-width:30vw; height:auto; mix-blend-mode: screen; opacity: 0.95; filter: drop-shadow(0 0 4px rgba(0,255,0,0.5)) drop-shadow(0 0 8px rgba(0,255,0,0.3)); transition: filter 0.4s ease, transform 0.4s ease; transform-origin: center center; }
@@ -194,9 +265,7 @@ nav a:hover::after { width: 100%; }
 #glitch-canvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; mix-blend-mode: hard-light; opacity: 0.35; z-index: 4; }
 
 .parallax-list { list-style:none; font-size:clamp(28px,3vw,44px); font-weight:400; line-height:1.1; display: flex; flex-direction: column; align-items: center; gap: 20px; }
-.parallax-list li { opacity:0; transform:translateY(50px); transition:opacity 1.2s ease, transform 1.2s cubic-bezier(0.215,0.61,0.355,1); position:relative; padding: 0; display: inline-block; transform-origin: center center; text-shadow: 0 0 4px rgba(0,255,0,0.5), 0 0 8px rgba(0,255,0,0.3); }
 .parallax-list li::after { content: ''; position: absolute; bottom: 1px; left: 50%; width: 0; height: 1.5px; background: linear-gradient(90deg, rgba(0,255,0,0) 0%, rgba(0,255,0,1) 15%, rgba(0,255,0,1) 85%, rgba(0,255,0,0) 100%); transform: translateX(-50%); transition: width 0.8s cubic-bezier(0.645, 0.045, 0.355, 1); filter: drop-shadow(0 0 2px rgba(0,255,0,0)) drop-shadow(0 0 5px rgba(0,255,0,0)) drop-shadow(0 0 10px rgba(0,255,0,0)); }
-.parallax-list li.visible { opacity:1; transform:translateY(0);}
 .parallax-list li:hover { color:#00FF00 !important; text-shadow:0 0 3px #00FF00, 0 0 8px #00FF00, 0 0 15px #00FF00; transform:scale(1.05)!important; }
 .parallax-list li:hover::after { width: 100%; }
 footer { position: fixed; bottom: 0; left: 0; right: 0; padding: 10px 10%; text-align: center; font-size: 12px; backdrop-filter: blur(7px); background: rgba(37, 0, 115, 0.3); z-index: 1000; display: flex; flex-direction: column; gap: 2px; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; }
@@ -205,24 +274,24 @@ footer a { color: #00FF00; text-decoration: none; position: relative; display: i
 .scroll-spacer { height: 400px; }
 </style>
 </head>
-<body>
-<button id="audio-toggle">AUDIO: ON</button>
+<body id="top" class="hopping-sync">
+<div id="crt-flash"></div>
+<button id="audio-toggle">AUDIO: OFF</button>
 <div id="custom-cursor">🕹️</div>
-<div class="video-background">
-    <div class="video-foreground">
-        <iframe 
-            src="https://www.youtube.com/embed/JMNGUv5nEwY?autoplay=1&mute=1&controls=0&loop=1&playlist=JMNGUv5nEwY&rel=0&enablejsapi=1&modestbranding=1&playsinline=1" 
-            frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-            allowfullscreen
-            title="Background Video">
-        </iframe>
-    </div>
+
+<div id="bg-video-container">
+  <video id="bg-video" autoplay loop muted playsinline>
+    <source src="videos/Glitch_Overlay_Colorful.mp4" type="video/mp4">
+  </video>
 </div>
+
 <div class="noise"></div>
 
 <header>
-  <nav>
+  <div class="nav-logo-wrap left">
+    <img src="images/roofacethin.png" class="nav-logo-img logo-trigger" alt="LOGO">
+  </div>
+  <nav id="main-nav">
     <a href="#socialmedia">Social Media</a>
     <a href="#creativedirection">Creative Direction</a>
     <a href="#videographyphotography">Videography/Photography</a>
@@ -234,16 +303,19 @@ footer a { color: #00FF00; text-decoration: none; position: relative; display: i
     <a href="#audioproductionsounddesign">Audio Production/Sound Design</a>
     <a href="#ai">AI</a>
   </nav>
+  <div class="nav-logo-wrap right">
+    <img src="images/roofacethin.png" class="nav-logo-img logo-trigger" alt="LOGO">
+  </div>
 </header>
 
 <section class="hero">
   <div style="position:relative; z-index:1;">
     <div class="glitch-container" id="hero-image-trigger">
       <div class="hero-image-wrap">
-        <img class="hero-image base" src="hellojoey8.png" alt="Hello Joey">
-        <img class="hero-image rgb r" src="hellojoey8.png" aria-hidden="true">
-        <img class="hero-image rgb g" src="hellojoey8.png" aria-hidden="true">
-        <img class="hero-image rgb b" src="hellojoey8.png" aria-hidden="true">
+        <img class="hero-image base" src="images/hellojoey8.png" alt="Hello Joey">
+        <img class="hero-image rgb r" src="images/hellojoey8.png" aria-hidden="true">
+        <img class="hero-image rgb g" src="images/hellojoey8.png" aria-hidden="true">
+        <img class="hero-image rgb b" src="images/hellojoey8.png" aria-hidden="true">
         <canvas id="glitch-canvas"></canvas>
       </div>
     </div>
@@ -273,7 +345,9 @@ footer a { color: #00FF00; text-decoration: none; position: relative; display: i
 
 <footer id="contact">
   <div id="kangaroo-container" class="hopping">
-    <img id="roo-img" src="hellojoeyjoey.png" alt="Kangaroo">
+    <a href="#top">
+      <img id="roo-img" src="images/hellojoeyjoey.png" alt="Home">
+    </a>
   </div>
   <p><a href="mailto:joey@sayhellojoey.com">joey@sayhellojoey.com</a></p>
   <p>©2026 HELLO JOEY. All Rights Reserved.</p>
@@ -281,15 +355,7 @@ footer a { color: #00FF00; text-decoration: none; position: relative; display: i
 
 <script>
 const cursor = document.getElementById('custom-cursor');
-let mouseX = 0, mouseY = 0;
-let currentX = 0, currentY = 0;
-let lastX = 0;
-/* Idle rotation BRO */
-let rotation = 10;
-let targetRotation = 10;
-let time = 0;
-let isMoving = false; 
-let moveTimeout;
+let mouseX = 0, mouseY = 0, currentX = 0, currentY = 0, lastX = 0, rotation = 10, targetRotation = 10, time = 0, isMoving = false, moveTimeout;
 
 const trailCount = 8;
 const trails = [];
@@ -312,56 +378,25 @@ function spawnParticle(x, y) {
 }
 
 document.addEventListener('mousemove', e => {
-  mouseX = e.clientX;
-  mouseY = e.clientY;
-  isMoving = true;
+  mouseX = e.clientX; mouseY = e.clientY; isMoving = true;
   clearTimeout(moveTimeout);
-  moveTimeout = setTimeout(() => {
-    isMoving = false;
-    targetRotation = 10;
-  }, 250);
-  
-  const deltaX = e.clientX - lastX;
-  lastX = e.clientX;
+  moveTimeout = setTimeout(() => { isMoving = false; targetRotation = 10; }, 250);
+  const deltaX = e.clientX - lastX; lastX = e.clientX;
   targetRotation = Math.max(Math.min(deltaX * 1.5, 35), -35);
-
-  if (Math.random() > 0.6) {
-    spawnParticle(e.clientX, e.clientY);
-  }
+  if (Math.random() > 0.6) spawnParticle(e.clientX, e.clientY);
 });
 
-function startIdleLeak() {
-    const nextLeak = () => {
-        if (!isMoving) {
-            const burst = Math.floor(Math.random() * 4) + 1;
-            for(let i=0; i<burst; i++){
-                setTimeout(() => spawnParticle(currentX, currentY), i * 100);
-            }
-        }
-        setTimeout(nextLeak, 800 + Math.random() * 2500);
-    }
-    nextLeak();
-}
-startIdleLeak();
-
 function animateCursor() {
-  time += 0.05;
-  currentX += (mouseX - currentX) * 0.2;
-  currentY += (mouseY - currentY) * 0.2;
+  time += 0.05; currentX += (mouseX - currentX) * 0.2; currentY += (mouseY - currentY) * 0.2;
   rotation += (targetRotation - rotation) * 0.1;
-  if (isMoving) targetRotation *= 0.9; 
-  
   const pulseScale = 1 + Math.sin(time) * 0.08;
-  cursor.style.left = currentX + 'px';
-  cursor.style.top = currentY + 'px';
+  cursor.style.left = currentX + 'px'; cursor.style.top = currentY + 'px';
   cursor.style.transform = `translate(-50%, -50%) rotate(${rotation}deg) scale(${pulseScale})`;
 
   trails.forEach((t, i) => {
     const delay = 0.35 - (i * 0.035);
-    t.x += (currentX - t.x) * delay;
-    t.y += (currentY - t.y) * delay;
-    t.el.style.left = t.x + 'px';
-    t.el.style.top = t.y + 'px';
+    t.x += (currentX - t.x) * delay; t.y += (currentY - t.y) * delay;
+    t.el.style.left = t.x + 'px'; t.el.style.top = t.y + 'px';
     t.el.style.opacity = (0.4 / (i + 1.5)).toString();
     t.el.style.transform = `translate(-50%, -50%) scale(${pulseScale * (1 - (i + 1) * 0.08)}) rotate(${rotation}deg)`;
   });
@@ -369,34 +404,51 @@ function animateCursor() {
 }
 animateCursor();
 
-window.addEventListener('load', () => window.scrollTo(0, 0));
 const items = document.querySelectorAll('.parallax-list li');
+let hasScrolled = false; 
+
 const observer = new IntersectionObserver(entries => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) entry.target.classList.add('visible');
-    else entry.target.classList.remove('visible');
+  entries.forEach(entry => { 
+    if (hasScrolled && entry.isIntersecting) {
+      entry.target.classList.add('visible'); 
+    }
   });
-}, { threshold: 0.2, rootMargin: '0px 0px -100px 0px' });
+}, { threshold: 0.2 });
+
 items.forEach(item => observer.observe(item));
 
 const heroImageTrigger = document.getElementById('hero-image-trigger');
 const headerEl = document.querySelector('header');
 const footerEl = document.querySelector('footer');
-const navEl = document.querySelector('nav');
-heroImageTrigger.addEventListener('mouseenter', () => { headerEl.classList.add('show'); footerEl.classList.add('show'); });
+const navEl = document.getElementById('main-nav');
+
+// Container hover
+heroImageTrigger.addEventListener('mouseenter', () => { 
+  headerEl.classList.add('show'); 
+  footerEl.classList.add('show'); 
+});
 
 let hasStuck = false;
 window.addEventListener('scroll', () => {
-  if (!heroImageTrigger) return;
   const scrollY = window.scrollY;
-  const imageRect = heroImageTrigger.getBoundingClientRect();
-  if (!hasStuck && imageRect.top <= 80 && scrollY > 50) {
-    heroImageTrigger.classList.add('sticky');
-    navEl.classList.add('fade-out');
+  if (!hasScrolled && scrollY > 20) {
+      hasScrolled = true;
+      items.forEach((item, index) => {
+        const rect = item.getBoundingClientRect();
+        if(rect.top < window.innerHeight && rect.bottom >= 0) {
+            setTimeout(() => { item.classList.add('visible'); }, index * 150);
+        }
+      });
+  }
+  
+  // Logic to lock the image to the header
+  if (!hasStuck && scrollY > 100) {
+    heroImageTrigger.classList.add('sticky'); 
+    navEl.classList.add('fade-out'); 
     hasStuck = true;
-  } else if (hasStuck && scrollY < 50) {
-    heroImageTrigger.classList.remove('sticky');
-    navEl.classList.remove('fade-out');
+  } else if (hasStuck && scrollY < 100) {
+    heroImageTrigger.classList.remove('sticky'); 
+    navEl.classList.remove('fade-out'); 
     hasStuck = false;
   }
 });
@@ -416,158 +468,152 @@ function glitchLoop() {
   if (!img.complete) { requestAnimationFrame(glitchLoop); return; }
   if (canvas.width === 0) resizeCanvas();
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
   if (imageWrapper) {
-    const jX = (Math.random() - 0.5) * 1.5;
-    const jY = (Math.random() - 0.5) * 1.5;
+    const jX = (Math.random() - 0.5) * 1.5; const jY = (Math.random() - 0.5) * 1.5;
     imageWrapper.style.transform = `translate(${jX}px, ${jY}px)`;
   }
-
   if (Math.random() < 0.3) {
-    const h = Math.random() * 40;
-    const sy = Math.random() * canvas.height;
-    const dx = (Math.random() - 0.5) * 55;
-    ctx.drawImage(img, 0, sy, canvas.width, h, dx, sy, canvas.width, h);
+    const h = Math.random() * 40; const sy = Math.random() * canvas.height;
+    const dx = (Math.random() - 0.5) * 55; ctx.drawImage(img, 0, sy, canvas.width, h, dx, sy, canvas.width, h);
   }
-  
   if (Math.random() < 0.22) {
-    const rx = (Math.random() - 0.5) * 25;
-    const gx = (Math.random() - 0.5) * 25;
-    rgbR.style.transform = `translate(${rx}px, 0)`;
-    rgbG.style.transform = `translate(${gx}px, 0)`;
+    rgbR.style.transform = `translate(${(Math.random()-0.5)*25}px, 0)`;
+    rgbG.style.transform = `translate(${(Math.random()-0.5)*25}px, 0)`;
     rgbR.style.opacity = "0.7"; rgbG.style.opacity = "0.75"; rgbB.style.opacity = "0.75";
   } else {
-    rgbR.style.transform = 'none'; rgbG.style.transform = 'none';
     rgbR.style.opacity = "0"; rgbG.style.opacity = "0"; rgbB.style.opacity = "0";
   }
   requestAnimationFrame(glitchLoop);
 }
-if (img) { img.onload = () => { resizeCanvas(); glitchLoop(); }; if (img.complete) { resizeCanvas(); glitchLoop(); } }
+if (img) { img.onload = resizeCanvas; if (img.complete) resizeCanvas(); glitchLoop(); }
 
-const JOEY_AUDIO_MIX = { master: 1.0, ghost: 0.10, arcade: 0.2, hum: 0.003, ping: 0.15, blip: 0.2 };
+/* --- VOLUME CONTROLS (0.0 to 1.0) --- */
+const JOEY_AUDIO_MIX = { 
+  master: 1.0, 
+  ghost: 0.55, 
+  arcade: 0.55, 
+  hum: 0.008, 
+  ping: 0.35, 
+  blip: 0.08, 
+  noise: 0   
+};
+
 let audioCtx;
+let staticNode;
+let humOsc;
+
 function initAudio() {
-  if (audioCtx) { if (audioCtx.state === 'suspended') audioCtx.resume(); return; }
+  if (audioCtx) return; 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const humOsc = audioCtx.createOscillator();
+  document.getElementById('crt-flash').classList.add('crt-active');
+  
+  const now = audioCtx.currentTime;
+  const startOsc = audioCtx.createOscillator();
+  const startGain = audioCtx.createGain();
+  startOsc.type = 'sine';
+  startOsc.frequency.setValueAtTime(40, now);
+  startOsc.frequency.exponentialRampToValueAtTime(8000, now + 0.3);
+  startGain.gain.setValueAtTime(0, now);
+  startGain.gain.linearRampToValueAtTime(0.2, now + 0.05);
+  startGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+  startOsc.connect(startGain);
+  startGain.connect(audioCtx.destination);
+  startOsc.start(now);
+  startOsc.stop(now + 0.5);
+
+  humOsc = audioCtx.createOscillator(); 
   const humGain = audioCtx.createGain();
-  humOsc.type = 'sawtooth'; humOsc.frequency.value = 60;
-  humGain.gain.value = JOEY_AUDIO_MIX.hum * JOEY_AUDIO_MIX.master;
-  humOsc.connect(humGain); humGain.connect(audioCtx.destination);
+  humOsc.type = 'sawtooth'; 
+  humOsc.frequency.value = 60;
+  humGain.gain.value = JOEY_AUDIO_MIX.hum; 
+  humOsc.connect(humGain); 
+  humGain.connect(audioCtx.destination);
   humOsc.start();
-  startBackgroundEngine();
+
+  const bufferSize = 2 * audioCtx.sampleRate;
+  const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+  const output = noiseBuffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) { output[i] = Math.random() * 2 - 1; }
+  staticNode = audioCtx.createBufferSource();
+  staticNode.buffer = noiseBuffer;
+  staticNode.loop = true;
+  const staticGain = audioCtx.createGain();
+  staticGain.gain.value = JOEY_AUDIO_MIX.noise;
+  staticNode.connect(staticGain);
+  staticGain.connect(audioCtx.destination);
+  staticNode.start();
+
+  const btn = document.getElementById('audio-toggle');
+  btn.textContent = 'AUDIO: ON';
+  btn.classList.add('audio-activated');
+  setTimeout(() => { btn.classList.remove('audio-activated'); }, 2000);
 }
-function startBackgroundEngine() {
-const ghostFreqs = [110, 220, 330, 440];
-  const arcadeFreqs = [440, 660, 880, 1200, 1600];
-  const triggerNext = () => {
-    if (!audioCtx) return;
-    const now = audioCtx.currentTime;
-    const roll = Math.random();
-    if (roll < 0.8) { 
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = 'sine'; osc.frequency.setValueAtTime(ghostFreqs[Math.floor(Math.random()*ghostFreqs.length)], now);
-      
-      gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(JOEY_AUDIO_MIX.ghost * JOEY_AUDIO_MIX.master, now + 0.5);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 3);
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.start(); osc.stop(now + 3.1);
-    } else { 
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = Math.random() > 0.5 ? 'square' : 'triangle';
-      const f = arcadeFreqs[Math.floor(Math.random()*arcadeFreqs.length)];
-      osc.frequency.setValueAtTime(f, now);
-      osc.frequency.exponentialRampToValueAtTime(f * 1.5, now + 0.1);
-      gain.gain.setValueAtTime(JOEY_AUDIO_MIX.arcade * JOEY_AUDIO_MIX.master, now);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
-      osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.start(); osc.stop(now + 0.21);
-    }
-    setTimeout(triggerNext, 1000 + Math.random() * 500);
-  };
-  triggerNext();
+
+function playGlassPing() { 
+  if(!audioCtx || audioCtx.state !== 'running') return; 
+  const now = audioCtx.currentTime; 
+  const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain(); 
+  osc.type = 'sine'; osc.frequency.setValueAtTime(7000, now); 
+  gain.gain.setValueAtTime(JOEY_AUDIO_MIX.ping, now); 
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1); 
+  osc.connect(gain); gain.connect(audioCtx.destination); 
+  osc.start(); osc.stop(now + 0.11); 
 }
-function playGlassPing() {
-  if (!audioCtx) return;
+
+function playGhostSound() {
+  if(!audioCtx || audioCtx.state !== 'running') return;
   const now = audioCtx.currentTime;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  const filter = audioCtx.createBiquadFilter();
-  osc.type = 'sine'; osc.frequency.setValueAtTime(6500 + Math.random()*500, now);
-  filter.type = 'highpass'; filter.frequency.value = 2500;
-  gain.gain.setValueAtTime(JOEY_AUDIO_MIX.ping * JOEY_AUDIO_MIX.master, now);
-  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
-  osc.connect(filter); filter.connect(gain); gain.connect(audioCtx.destination);
-  osc.start(); osc.stop(now + 0.11);
-}
-function play8BitBlip() {
-  if (!audioCtx) return;
-  const now = audioCtx.currentTime;
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = 'square'; osc.frequency.setValueAtTime(5500, now);
-  osc.frequency.exponentialRampToValueAtTime(40, now + 0.08);
-  gain.gain.setValueAtTime(JOEY_AUDIO_MIX.blip * JOEY_AUDIO_MIX.master, now);
-  gain.gain.linearRampToValueAtTime(0, now + 0.08);
+  const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+  osc.type = 'sine'; osc.frequency.setValueAtTime(220, now);
+  gain.gain.setValueAtTime(0, now); 
+  gain.gain.linearRampToValueAtTime(JOEY_AUDIO_MIX.ghost, now + 0.1); 
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.5);
   osc.connect(gain); gain.connect(audioCtx.destination);
-  osc.start(); osc.stop(now + 0.09);
+  osc.start(); osc.stop(now + 1.6);
 }
-document.addEventListener('mousedown', (e) => { initAudio(); if (e.target.closest('#hero-image-trigger')) play8BitBlip(); });
-document.addEventListener('scroll', initAudio, { once: true });
-document.querySelectorAll('nav a, .parallax-list li').forEach(el => { el.addEventListener('mouseenter', playGlassPing); });
-const hero = document.getElementById('hero-image-trigger');
-if(hero) hero.addEventListener('mouseenter', play8BitBlip);
-const audioBtn = document.getElementById('audio-toggle');
-audioBtn.addEventListener('click', () => {
-  if (audioCtx.state === 'running') {
-    audioCtx.suspend();
-    audioBtn.textContent = 'AUDIO: OFF';
-  } else {
-    audioCtx.resume();
-    audioBtn.textContent = 'AUDIO: ON';
-  }
+
+const heroImage = document.querySelector('.hero-image.base');
+if (heroImage) {
+  heroImage.addEventListener('mouseenter', () => { 
+    initAudio(); 
+    playGhostSound(); 
+  });
+  heroImage.addEventListener('mousedown', initAudio, { once: true });
+}
+
+document.querySelectorAll('.logo-trigger').forEach(logo => {
+  logo.addEventListener('mouseenter', () => {
+    initAudio();
+    playGhostSound();
+  });
 });
+
+document.querySelectorAll('nav a, .parallax-list li, #roo-img').forEach(el => el.addEventListener('mouseenter', playGlassPing));
 
 const rooContainer = document.getElementById('kangaroo-container');
 const rooImg = document.getElementById('roo-img');
+const bodySync = document.body;
 let shouldPause = false;
+
+setTimeout(() => { if (rooContainer) { rooContainer.style.opacity = "1"; scheduleRooPause(); } }, 10000);
 
 if (rooImg) {
   rooImg.addEventListener('animationiteration', () => {
     if (shouldPause) {
-      rooContainer.classList.add('paused-roo');
-      shouldPause = false;
-      setTimeout(() => {
-        rooContainer.classList.remove('paused-roo');
-        scheduleRooPause();
-      }, 3000);
-    }
-    if (typeof play8BitBlip === "function" && audioCtx && audioCtx.state === 'running') {
-       const now = audioCtx.currentTime;
-       const osc = audioCtx.createOscillator();
-       const gain = audioCtx.createGain();
-       osc.type = 'sine';
-       osc.frequency.setValueAtTime(60, now);
-       gain.gain.setValueAtTime(0.05, now);
-       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
-       osc.connect(gain);
-       gain.connect(audioCtx.destination);
-       osc.start();
-       osc.stop(now + 0.1);
+      rooContainer.classList.add('paused-roo'); bodySync.classList.remove('hopping-sync'); shouldPause = false;
+      setTimeout(() => { rooContainer.classList.remove('paused-roo'); bodySync.classList.add('hopping-sync'); scheduleRooPause(); }, 3000);
     }
   });
 }
+function scheduleRooPause() { setTimeout(() => { shouldPause = true; }, Math.random() * 5000 + 3000); }
 
-function scheduleRooPause() {
-  const pauseInterval = Math.random() * 5000 + 3000; 
-  setTimeout(() => {
-    shouldPause = true; 
-  }, pauseInterval);
-}
-scheduleRooPause();
+const audioBtn = document.getElementById('audio-toggle');
+audioBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (!audioCtx) return; 
+  if (audioCtx.state === 'running') { audioCtx.suspend().then(() => { audioBtn.textContent = 'AUDIO: OFF'; }); } 
+  else { audioCtx.resume().then(() => { audioBtn.textContent = 'AUDIO: ON'; }); }
+});
 </script>
 </body>
 </html>

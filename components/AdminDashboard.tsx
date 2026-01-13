@@ -60,7 +60,7 @@ export default function AdminDashboard() {
     router.refresh();
   };
 
-  const handleImageUpload = async (file: File, fieldName: 'hero' | 'kangaroo') => {
+  const handleImageUpload = async (file: File, fieldName: 'hero' | 'kangaroo' | 'logo') => {
     if (!content) return;
 
     setUploading(fieldName);
@@ -85,13 +85,20 @@ export default function AdminDashboard() {
             ...content,
             hero: { ...content.hero, image: data.path },
           });
+          setMessage('Hero image uploaded successfully!');
         } else if (fieldName === 'kangaroo') {
           setContent({
             ...content,
             kangaroo: { ...content.kangaroo, image: data.path },
           });
+          setMessage('Kangaroo image uploaded successfully!');
+        } else if (fieldName === 'logo') {
+          setContent({
+            ...content,
+            logo: { ...content.logo, image: data.path },
+          });
+          setMessage('Logo uploaded successfully!');
         }
-        setMessage(`${fieldName === 'hero' ? 'Hero' : 'Kangaroo'} image uploaded successfully!`);
         setTimeout(() => setMessage(''), 3000);
       } else {
         setMessage(data.error || 'Failed to upload image');
@@ -179,6 +186,53 @@ export default function AdminDashboard() {
           </div>
         </section>
 
+        {/* Logo Editor */}
+        <section className="mb-8 p-6 sm:p-8 bg-[rgba(37,0,115,0.3)] border-2 border-neon-green rounded-lg">
+          <h2 className="text-2xl sm:text-3xl mb-6 uppercase font-semibold pb-3 border-b border-neon-green/30">Navigation Logo</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block mb-2 text-sm uppercase font-medium">Current Logo</label>
+              {content.logo.image && (
+                <div className="mb-4">
+                  <img 
+                    src={content.logo.image} 
+                    alt={content.logo.alt || 'Logo'} 
+                    className="max-w-full h-auto max-h-48 border-2 border-neon-green/50 rounded"
+                  />
+                </div>
+              )}
+              <label className="block mb-2 text-sm uppercase font-medium">Upload New Logo</label>
+              <input
+                type="file"
+                accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleImageUpload(file, 'logo');
+                  }
+                }}
+                disabled={uploading === 'logo'}
+                className="w-full px-4 py-3 bg-black/50 border-2 border-neon-green/50 text-neon-green focus:outline-none focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-neon-green file:text-black file:font-upheaval file:uppercase file:cursor-pointer hover:file:bg-[#00cc00] disabled:opacity-50"
+              />
+              {uploading === 'logo' && (
+                <p className="mt-2 text-sm text-neon-green/70">Uploading...</p>
+              )}
+              <p className="mt-2 text-xs text-neon-green/60">Current path: {content.logo.image}</p>
+            </div>
+            <div>
+              <label className="block mb-2 text-sm uppercase font-medium">Alt Text</label>
+              <input
+                type="text"
+                value={content.logo.alt}
+                onChange={(e) =>
+                  setContent({ ...content, logo: { ...content.logo, alt: e.target.value } })
+                }
+                className="w-full px-4 py-3 bg-black/50 border-2 border-neon-green/50 text-neon-green focus:outline-none focus:ring-2 focus:ring-neon-green focus:border-neon-green transition-all font-sans normal-case"
+              />
+            </div>
+          </div>
+        </section>
+
         {/* Hero Image Editor */}
         <section className="mb-8 p-6 sm:p-8 bg-[rgba(37,0,115,0.3)] border-2 border-neon-green rounded-lg">
           <h2 className="text-2xl sm:text-3xl mb-6 uppercase font-semibold pb-3 border-b border-neon-green/30">Hero Image</h2>
@@ -241,29 +295,6 @@ export default function AdminDashboard() {
                   setContent({
                     ...content,
                     sections: { ...content.sections, about: newAbout },
-                  });
-                }}
-                className="w-full px-4 py-3 bg-black/50 border-2 border-neon-green/50 text-neon-green focus:outline-none focus:ring-2 focus:ring-neon-green focus:border-neon-green uppercase transition-all"
-              />
-            ))}
-          </div>
-        </section>
-
-        {/* Competencies Section Editor */}
-        <section className="mb-8 p-6 sm:p-8 bg-[rgba(37,0,115,0.3)] border-2 border-neon-green rounded-lg">
-          <h2 className="text-2xl sm:text-3xl mb-6 uppercase font-semibold pb-3 border-b border-neon-green/30">Competencies Section</h2>
-          <div className="space-y-3">
-            {content.sections.competencies.map((item, index) => (
-              <input
-                key={index}
-                type="text"
-                value={item}
-                onChange={(e) => {
-                  const newCompetencies = [...content.sections.competencies];
-                  newCompetencies[index] = e.target.value;
-                  setContent({
-                    ...content,
-                    sections: { ...content.sections, competencies: newCompetencies },
                   });
                 }}
                 className="w-full px-4 py-3 bg-black/50 border-2 border-neon-green/50 text-neon-green focus:outline-none focus:ring-2 focus:ring-neon-green focus:border-neon-green uppercase transition-all"
