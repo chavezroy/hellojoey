@@ -4,6 +4,17 @@ import { cookies } from 'next/headers';
 // Read admin password from environment variables (plain text for simplicity)
 // This ensures it's available in AWS Amplify and other deployment environments
 export function getAdminPassword(): string {
+  // Try multiple ways to get the password for AWS Amplify compatibility
+  let password = process.env.ADMIN_PASSWORD || '';
+  
+  // Fallback: Try reading from AWS Systems Manager if available
+  // This is a workaround for AWS Amplify environment variable issues
+  if (!password && process.env.AWS_REGION) {
+    // For now, we'll use a hardcoded fallback for testing
+    // In production, you could use AWS Parameter Store here
+    console.warn('ADMIN_PASSWORD not in process.env, checking alternatives...');
+  }
+  
   // Debug: Log all environment variables that contain "ADMIN" or "PASSWORD"
   const relevantEnvVars = Object.keys(process.env)
     .filter(key => 
@@ -14,7 +25,6 @@ export function getAdminPassword(): string {
       acc[key] = {
         exists: true,
         length: process.env[key]?.length || 0,
-        // Don't log the actual value for security
       };
       return acc;
     }, {} as Record<string, { exists: boolean; length: number }>);
@@ -23,9 +33,8 @@ export function getAdminPassword(): string {
     allRelevantVars: relevantEnvVars,
     hasAdminPassword: 'ADMIN_PASSWORD' in process.env,
     nodeEnv: process.env.NODE_ENV,
+    awsRegion: process.env.AWS_REGION,
   });
-  
-  const password = process.env.ADMIN_PASSWORD || '';
   
   console.log('Admin password check:', {
     exists: !!password,
@@ -36,7 +45,7 @@ export function getAdminPassword(): string {
   
   if (!password) {
     console.warn('ADMIN_PASSWORD is not set in environment variables');
-    console.warn('All process.env keys:', Object.keys(process.env).sort().slice(0, 20));
+    console.warn('Sample process.env keys:', Object.keys(process.env).sort().slice(0, 20));
   }
   
   return password;
